@@ -1,0 +1,92 @@
+{
+  "displayName": "EvMigHitAnalytics",
+  "description": "Port of Evelyn table ds_uc_B_AML_PEP_hit_analytics_v3_0, final state of its Liquibase changesets (docs/mapping.md §8.3).",
+  "fields": [
+    {
+      "name": "Uuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "isRequired": true,
+      "isUnique": true,
+      "description": "Evelyn column uuid (NVARCHAR(36)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "TransactionUuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column transaction_uuid (NVARCHAR(36)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleId",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column wle_id (NVARCHAR(255)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleCategory",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column wle_category (NVARCHAR(255)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleEntityType",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column wle_entity_type (NVARCHAR(255)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleDwDecision",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column wle_dw_decision (NVARCHAR(255)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleDwExplanation",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column wle_dw_explanation (NVARCHAR(max)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleMtDecision",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column wle_mt_decision (NVARCHAR(255)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleMtExplanation",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column wle_mt_explanation (NVARCHAR(max)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WorkerFullName",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column worker_full_name (NVARCHAR(255)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WorkerId",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column worker_id (NVARCHAR(36)), 034_2_hit_analytics_table.yaml"
+    },
+    {
+      "name": "GoldDecision",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column gold_decision (NVARCHAR(36)), 039_add_gold_value_to_analytics_table.yaml"
+    },
+    {
+      "name": "NameMatchingScore",
+      "type": "STRING",
+      "lengthLimit": 50,
+      "description": "Evelyn column name_matching_score (NVARCHAR(50)), 043_add_scores_to_hit_analytics_table.yaml"
+    },
+    {
+      "name": "WleDecisionScore",
+      "type": "STRING",
+      "lengthLimit": 5,
+      "description": "Evelyn column wle_decision_score (NVARCHAR(5)), 043_add_scores_to_hit_analytics_table.yaml"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigCsvSchemaProducer",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "de54704b-4a8f-4fa8-8898-13116c91a41b",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "EvMigCsvSchemaProducer"
+    },
+    "locks": [],
+    "key": "80f5d264-4107-4170-af9e-3f8367aec7ab",
+    "files": []
+  }
+}

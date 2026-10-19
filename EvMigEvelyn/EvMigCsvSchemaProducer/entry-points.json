@@ -1,0 +1,118 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "c31e8826-17bd-4b47-854e-a6bdab85221d",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "screened_data": {
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "wle_list": {
+                        "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "type": "array"
+                    },
+                    "bp_run_id": {
+                        "type": "string"
+                    },
+                    "bp_start_time": {
+                        "type": "string"
+                    },
+                    "request_id": {
+                        "type": "string"
+                    },
+                    "rest_request": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Rest Request"
+                    },
+                    "provider_id": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "screened_data",
+                    "wle_list",
+                    "bp_run_id",
+                    "bp_start_time"
+                ],
+                "title": "ProducerIn"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "transaction_id": {
+                        "title": "Transaction Id",
+                        "type": "string"
+                    },
+                    "screened_data": {
+                        "additionalProperties": true,
+                        "title": "Screened Data",
+                        "type": "object"
+                    },
+                    "wle_list": {
+                        "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "title": "Wle List",
+                        "type": "array"
+                    },
+                    "request_id": {
+                        "title": "Request Id",
+                        "type": "string"
+                    },
+                    "wle_count": {
+                        "title": "Wle Count",
+                        "type": "integer"
+                    },
+                    "is_internal_request": {
+                        "title": "Is Internal Request",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "transaction_id",
+                    "screened_data",
+                    "wle_list",
+                    "request_id",
+                    "wle_count",
+                    "is_internal_request"
+                ],
+                "title": "ProducerOut"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "main.py:62",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "main.py"
+                        }
+                    }
+                ],
+                "edges": []
+            }
+        }
+    ]
+}

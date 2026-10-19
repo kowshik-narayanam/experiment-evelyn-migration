@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigCsvMonitorTask",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "cafa7601-3b55-41ed-b213-ebbcbc96e040",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "EvMigCsvMonitorTask"
+    },
+    "locks": [],
+    "key": "61792fcc-eea0-49bc-bde1-03c976790138",
+    "files": []
+  }
+}

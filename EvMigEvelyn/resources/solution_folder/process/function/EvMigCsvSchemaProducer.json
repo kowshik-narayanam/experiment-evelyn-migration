@@ -1,0 +1,37 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigCsvSchemaProducer",
+    "kind": "process",
+    "type": "function",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "de54704b-4a8f-4fa8-8898-13116c91a41b",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "EvMigCsvSchemaProducer"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Function",
+      "name": "EvMigCsvSchemaProducer",
+      "package": {
+        "key": "80f5d264-4107-4170-af9e-3f8367aec7ab"
+      },
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "7cdcf25b-0d9d-4303-bc3a-4fec4780bcf8",
+    "files": []
+  }
+}

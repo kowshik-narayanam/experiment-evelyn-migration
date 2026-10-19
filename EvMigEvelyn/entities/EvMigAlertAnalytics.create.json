@@ -1,0 +1,126 @@
+{
+  "displayName": "EvMigAlertAnalytics",
+  "description": "Port of Evelyn table ds_uc_B_AML_PEP_alert_analytics_v3_0, final state of its Liquibase changesets (docs/mapping.md §8.2).",
+  "fields": [
+    {
+      "name": "Uuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "isRequired": true,
+      "isUnique": true,
+      "description": "Evelyn column uuid (NVARCHAR(36)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "TransactionUuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column transaction_uuid (NVARCHAR(36)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertId",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column alert_id (NVARCHAR(max)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertCategory",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column alert_category (NVARCHAR(max)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertEntityType",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column alert_entity_type (NVARCHAR(255)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertDwDecision",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column alert_dw_decision (NVARCHAR(255)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertDwExplanation",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column alert_dw_explanation (NVARCHAR(max)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertMtDecision",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column alert_mt_decision (NVARCHAR(255)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AlertMtExplanation",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column alert_mt_explanation (NVARCHAR(max)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "WorkerFullName",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column worker_full_name (NVARCHAR(255)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "WorkerId",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column worker_id (NVARCHAR(36)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "HtmlReportLink",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column html_report_link (NVARCHAR(max)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "CsvReportLink",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column csv_report_link (NVARCHAR(max)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "AutoQC",
+      "type": "BOOLEAN",
+      "description": "Evelyn column autoQC (NVARCHAR(5)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "Ticker",
+      "type": "BOOLEAN",
+      "description": "Evelyn column ticker (NVARCHAR(5)), 034_1_alert_analytics_table.yaml"
+    },
+    {
+      "name": "GoldDecision",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column gold_decision (NVARCHAR(36)), 039_add_gold_value_to_analytics_table.yaml"
+    },
+    {
+      "name": "MtReviewStart",
+      "type": "DATETIME_WITH_TZ",
+      "description": "Evelyn column mt_review_start (DATETIME2), 040_add_mt_start_end_time.yaml"
+    },
+    {
+      "name": "MtReviewComplete",
+      "type": "DATETIME_WITH_TZ",
+      "description": "Evelyn column mt_review_complete (DATETIME2), 040_add_mt_start_end_time.yaml"
+    },
+    {
+      "name": "ClientId",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "isRequired": true,
+      "defaultValue": "1",
+      "description": "Evelyn column client_id (NVARCHAR(255)), 044_add_client_id_column.yaml"
+    },
+    {
+      "name": "OriginalTransactionUuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column original_transaction_uuid (NVARCHAR(36)), 047_add_original_transaction_uuid_to_alert_analytics.yaml"
+    }
+  ]
+}

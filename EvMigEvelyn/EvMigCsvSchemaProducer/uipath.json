@@ -1,0 +1,6 @@
+{
+  "id": "f3958b93-d5a7-4c2e-aed8-d3b2a9bfe18f",
+  "functions": {
+    "main": "main.py:main"
+  }
+}

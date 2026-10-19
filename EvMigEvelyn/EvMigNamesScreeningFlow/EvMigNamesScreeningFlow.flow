@@ -1,0 +1,981 @@
+{
+  "id": "f0f2504f-1abc-4409-bf25-b36f06c7b923",
+  "version": "1.9",
+  "name": "EvMigNamesScreeningFlow",
+  "runtime": "maestro",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "core.trigger.manual",
+      "typeVersion": "1.0",
+      "display": {
+        "label": "Manual trigger",
+        "icon": "play"
+      },
+      "inputs": {
+        "entryPointId": "667e65c3-f5c0-4c66-9828-e3f05b72c592",
+        "isDefaultEntryPoint": true
+      },
+      "outputs": {
+        "output": {
+          "type": "object",
+          "description": "Data passed when manually triggering the process.",
+          "source": "null",
+          "var": "output"
+        }
+      },
+      "uniqueId": "f460b3dd-8620-4bad-bd49-f41b413b1a18"
+    },
+    {
+      "id": "screeningSystem1",
+      "type": "core.logic.decision",
+      "typeVersion": "1.3",
+      "display": {
+        "label": "Screening System",
+        "icon": "trending-up-down"
+      },
+      "inputs": {
+        "trueLabel": "CSV",
+        "falseLabel": "Other providers",
+        "expression": "$vars.start.output.provider_id === \"CSV\""
+      },
+      "uniqueId": "39e9c040-b816-4237-ab61-14e8577444a6"
+    },
+    {
+      "id": "csvSchemaProducer1",
+      "type": "uipath.core.function.7cdcf25b-0d9d-4303-bc3a-4fec4780bcf8",
+      "typeVersion": "1.0.0",
+      "display": {
+        "label": "csv-schema-producer",
+        "icon": "function"
+      },
+      "inputs": {
+        "screened_data": {
+          "type": "jsExpression",
+          "expression": "$vars.start.output.screened_data",
+          "fieldType": "object"
+        },
+        "wle_list": {
+          "type": "jsExpression",
+          "expression": "$vars.start.output.wle_list",
+          "fieldType": "array"
+        },
+        "bp_run_id": "=js:$vars.start.output.bp_run_id",
+        "bp_start_time": "=js:$vars.start.output.bp_start_time",
+        "request_id": "=js:$vars.start.output.request_id",
+        "rest_request": "",
+        "provider_id": "=js:$vars.start.output.provider_id"
+      },
+      "outputs": {
+        "output": {
+          "type": "object",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "transaction_id": {
+                "title": "Transaction Id",
+                "type": "string"
+              },
+              "screened_data": {
+                "additionalProperties": true,
+                "title": "Screened Data",
+                "type": "object"
+              },
+              "wle_list": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "title": "Wle List",
+                "type": "array"
+              },
+              "request_id": {
+                "title": "Request Id",
+                "type": "string"
+              },
+              "wle_count": {
+                "title": "Wle Count",
+                "type": "integer"
+              },
+              "is_internal_request": {
+                "title": "Is Internal Request",
+                "type": "boolean"
+              }
+            }
+          },
+          "source": "=this",
+          "var": "output"
+        },
+        "error": {
+          "type": "object",
+          "description": "Error information if the node fails",
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "required": [
+              "code",
+              "message",
+              "detail",
+              "category",
+              "status"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Error code as a string"
+              },
+              "message": {
+                "type": "string",
+                "description": "High-level error message"
+              },
+              "detail": {
+                "type": "string",
+                "description": "Detailed error description"
+              },
+              "category": {
+                "type": "string",
+                "description": "Error category"
+              },
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            },
+            "additionalProperties": false
+          },
+          "source": "=Error",
+          "var": "error"
+        }
+      },
+      "uniqueId": "8bd05b0f-3973-4ab5-a322-d2bc67488852"
+    },
+    {
+      "id": "finalResults1",
+      "type": "core.control.end",
+      "typeVersion": "1.0",
+      "display": {
+        "label": "Final Results",
+        "icon": "circle-check"
+      },
+      "inputs": {},
+      "uniqueId": "958bf386-dc7f-407c-b47a-ef5a5188eb6c"
+    },
+    {
+      "id": "otherProvidersNotPorted1",
+      "type": "core.control.end",
+      "typeVersion": "1.0",
+      "display": {
+        "label": "Other providers (not ported)",
+        "icon": "circle-check"
+      },
+      "inputs": {},
+      "uniqueId": "0bbd01d8-6843-4a08-8b59-1b10c8a217e3"
+    }
+  ],
+  "edges": [
+    {
+      "id": "start-output-screeningSystem1-input",
+      "sourceNodeId": "start",
+      "sourcePort": "output",
+      "targetNodeId": "screeningSystem1",
+      "targetPort": "input"
+    },
+    {
+      "id": "screeningSystem1-true-csvSchemaProducer1-input",
+      "sourceNodeId": "screeningSystem1",
+      "sourcePort": "true",
+      "targetNodeId": "csvSchemaProducer1",
+      "targetPort": "input"
+    },
+    {
+      "id": "csvSchemaProducer1-output-finalResults1-input",
+      "sourceNodeId": "csvSchemaProducer1",
+      "sourcePort": "output",
+      "targetNodeId": "finalResults1",
+      "targetPort": "input"
+    },
+    {
+      "id": "screeningSystem1-false-otherProvidersNotPorted1-input",
+      "sourceNodeId": "screeningSystem1",
+      "sourcePort": "false",
+      "targetNodeId": "otherProvidersNotPorted1",
+      "targetPort": "input"
+    }
+  ],
+  "definitions": [
+    {
+      "nodeType": "core.trigger.manual",
+      "version": "1.0",
+      "category": "trigger",
+      "description": "Start the process manually",
+      "tags": [
+        "trigger",
+        "start",
+        "manual"
+      ],
+      "sortOrder": 80,
+      "display": {
+        "label": "Manual trigger",
+        "icon": "play",
+        "shape": "circle"
+      },
+      "handleConfiguration": [
+        {
+          "position": "right",
+          "handles": [
+            {
+              "id": "output",
+              "type": "source",
+              "handleType": "output",
+              "showButton": true,
+              "constraints": {
+                "forbiddenTargetCategories": [
+                  "trigger"
+                ]
+              }
+            }
+          ],
+          "visible": true
+        }
+      ],
+      "model": {
+        "type": "bpmn:StartEvent",
+        "entryPointId": true
+      },
+      "outputDefinition": {
+        "output": {
+          "type": "object",
+          "description": "Data passed when manually triggering the process.",
+          "source": "null",
+          "var": "output"
+        }
+      },
+      "toolbarExtensions": {
+        "design": {
+          "actions": [
+            {
+              "id": "change-trigger-type",
+              "icon": "square-mouse-pointer",
+              "label": "Change trigger type"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeType": "core.logic.decision",
+      "version": "1.3",
+      "category": "control-flow",
+      "description": "Branch on a true or false condition",
+      "tags": [
+        "control-flow",
+        "if",
+        "loop",
+        "switch"
+      ],
+      "sortOrder": 61,
+      "display": {
+        "label": "Decision",
+        "icon": "trending-up-down"
+      },
+      "handleConfiguration": [
+        {
+          "position": "left",
+          "handles": [
+            {
+              "id": "input",
+              "type": "target",
+              "handleType": "input"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "position": "right",
+          "handles": [
+            {
+              "id": "true",
+              "type": "source",
+              "handleType": "output",
+              "label": "{inputs.trueLabel}"
+            },
+            {
+              "id": "false",
+              "type": "source",
+              "handleType": "output",
+              "label": "{inputs.falseLabel}"
+            }
+          ],
+          "visible": true
+        }
+      ],
+      "debug": {
+        "runtime": "clientScript"
+      },
+      "model": {
+        "type": "bpmn:InclusiveGateway"
+      },
+      "inputDefinition": {
+        "type": "object",
+        "properties": {
+          "expression": {
+            "type": "string",
+            "minLength": 1,
+            "errorMessage": "Add a condition"
+          },
+          "trueLabel": {
+            "type": "string"
+          },
+          "falseLabel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "expression"
+        ]
+      },
+      "outputDefinition": {
+        "matchedCase": {
+          "type": "string",
+          "description": "The label of the matched branch (true/false label)",
+          "var": "matchedCase"
+        },
+        "matchedCaseId": {
+          "type": "string",
+          "description": "The branch that was taken (true or false)",
+          "var": "matchedCaseId"
+        }
+      },
+      "inputDefaults": {
+        "trueLabel": "True",
+        "falseLabel": "False"
+      },
+      "form": {
+        "id": "decision-properties",
+        "title": "Decision configuration",
+        "sections": [
+          {
+            "id": "condition",
+            "title": "Condition",
+            "fields": [
+              {
+                "name": "inputs.expression",
+                "type": "custom",
+                "component": "code-editor",
+                "componentProps": {
+                  "singleLine": true,
+                  "mode": "expression",
+                  "toggleable": false,
+                  "language": "javascript",
+                  "returnType": "boolean",
+                  "validationMode": "expression",
+                  "showVariableButton": true,
+                  "placeholder": "$vars.httpRequest1.output.statusCode >= 200 && $vars.httpRequest1.output.statusCode < 300"
+                },
+                "label": "Condition",
+                "description": "The condition must be a JavaScript expression that evaluates to true or false."
+              },
+              {
+                "name": "inputs.trueLabel",
+                "type": "text",
+                "label": "True branch label",
+                "description": "This label appears on the true branch."
+              },
+              {
+                "name": "inputs.falseLabel",
+                "type": "text",
+                "label": "False branch label",
+                "description": "This label appears on the false branch."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeType": "uipath.core.function.7cdcf25b-0d9d-4303-bc3a-4fec4780bcf8",
+      "version": "1.0.0",
+      "category": "function.in-solution",
+      "runtimeConstraints": {
+        "exclude": [
+          "api-function"
+        ]
+      },
+      "description": "(In-solution) EvMigCsvSchemaProducer",
+      "tags": [
+        "in-solution",
+        "local"
+      ],
+      "sortOrder": 650,
+      "supportsErrorHandling": true,
+      "display": {
+        "label": "EvMigCsvSchemaProducer",
+        "icon": "function"
+      },
+      "handleConfiguration": [
+        {
+          "position": "left",
+          "handles": [
+            {
+              "id": "input",
+              "type": "target",
+              "handleType": "input"
+            }
+          ]
+        },
+        {
+          "position": "right",
+          "handles": [
+            {
+              "id": "output",
+              "type": "source",
+              "handleType": "output"
+            },
+            {
+              "id": "error",
+              "label": "Error",
+              "type": "source",
+              "handleType": "output",
+              "visible": "{inputs.errorHandlingEnabled}",
+              "constraints": {
+                "maxConnections": 1
+              }
+            }
+          ]
+        }
+      ],
+      "toolbarExtensions": {
+        "design": {
+          "actions": [
+            {
+              "id": "open-workflow",
+              "icon": "external-link",
+              "label": "Open"
+            }
+          ]
+        }
+      },
+      "projectId": "de54704b-4a8f-4fa8-8898-13116c91a41b",
+      "model": {
+        "type": "bpmn:ServiceTask",
+        "serviceType": "Orchestrator.ExecuteFunctionAsync",
+        "version": "v2",
+        "bindings": {
+          "resource": "process",
+          "resourceSubType": "Function",
+          "resourceKey": "7cdcf25b-0d9d-4303-bc3a-4fec4780bcf8",
+          "orchestratorType": "function",
+          "values": [
+            {
+              "name": "name",
+              "propertyAttribute": "name",
+              "default": "EvMigCsvSchemaProducer"
+            },
+            {
+              "name": "folderPath",
+              "propertyAttribute": "folderPath",
+              "default": ""
+            }
+          ]
+        },
+        "projectId": "de54704b-4a8f-4fa8-8898-13116c91a41b",
+        "projectName": "EvMigCsvSchemaProducer",
+        "isInSolution": true,
+        "context": [
+          {
+            "name": "name",
+            "type": "string",
+            "value": "<bindings.name>"
+          },
+          {
+            "name": "folderPath",
+            "type": "string",
+            "value": "<bindings.folderPath>"
+          },
+          {
+            "name": "_label",
+            "type": "string",
+            "value": "EvMigCsvSchemaProducer"
+          }
+        ]
+      },
+      "form": {
+        "id": "activity-properties",
+        "title": "Function",
+        "sections": [
+          {
+            "id": "inputs",
+            "title": "Inputs",
+            "collapsible": true,
+            "defaultExpanded": true,
+            "fields": [
+              {
+                "name": "inputs.screened_data",
+                "type": "custom",
+                "component": "object-editor",
+                "label": "screened_data",
+                "componentProps": {
+                  "schema": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  }
+                }
+              },
+              {
+                "name": "inputs.wle_list",
+                "type": "custom",
+                "component": "object-editor",
+                "label": "wle_list",
+                "componentProps": {
+                  "schema": {
+                    "items": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                }
+              },
+              {
+                "name": "inputs.bp_run_id",
+                "type": "text",
+                "label": "bp_run_id"
+              },
+              {
+                "name": "inputs.bp_start_time",
+                "type": "text",
+                "label": "bp_start_time"
+              },
+              {
+                "name": "inputs.request_id",
+                "type": "text",
+                "label": "request_id"
+              },
+              {
+                "name": "inputs.rest_request",
+                "type": "text",
+                "label": "rest_request"
+              },
+              {
+                "name": "inputs.provider_id",
+                "type": "text",
+                "label": "provider_id"
+              }
+            ]
+          }
+        ]
+      },
+      "inputDefinition": {
+        "type": "object",
+        "properties": {
+          "screened_data": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "wle_list": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "bp_run_id": {
+            "type": "string"
+          },
+          "bp_start_time": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "rest_request": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rest Request"
+          },
+          "provider_id": {
+            "type": "string"
+          }
+        }
+      },
+      "inputDefaults": {
+        "screened_data": null,
+        "wle_list": null,
+        "bp_run_id": "",
+        "bp_start_time": "",
+        "request_id": "",
+        "rest_request": "",
+        "provider_id": ""
+      },
+      "outputDefinition": {
+        "output": {
+          "type": "object",
+          "source": "=this",
+          "var": "output",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "transaction_id": {
+                "title": "Transaction Id",
+                "type": "string"
+              },
+              "screened_data": {
+                "additionalProperties": true,
+                "title": "Screened Data",
+                "type": "object"
+              },
+              "wle_list": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "title": "Wle List",
+                "type": "array"
+              },
+              "request_id": {
+                "title": "Request Id",
+                "type": "string"
+              },
+              "wle_count": {
+                "title": "Wle Count",
+                "type": "integer"
+              },
+              "is_internal_request": {
+                "title": "Is Internal Request",
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "description": "Error information if the node fails",
+          "source": "=Error",
+          "var": "error",
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "required": [
+              "code",
+              "message",
+              "detail",
+              "category",
+              "status"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Error code as a string"
+              },
+              "message": {
+                "type": "string",
+                "description": "High-level error message"
+              },
+              "detail": {
+                "type": "string",
+                "description": "Detailed error description"
+              },
+              "category": {
+                "type": "string",
+                "description": "Error category"
+              },
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "debug": {
+        "runtime": "bpmnEngine"
+      }
+    },
+    {
+      "nodeType": "core.control.end",
+      "version": "1.0",
+      "category": "control-flow",
+      "description": "Mark the end of a process path",
+      "tags": [
+        "control-flow",
+        "end",
+        "finish",
+        "complete"
+      ],
+      "sortOrder": 66,
+      "display": {
+        "label": "End",
+        "icon": "circle-check",
+        "shape": "circle"
+      },
+      "handleConfiguration": [
+        {
+          "position": "left",
+          "handles": [
+            {
+              "id": "input",
+              "type": "target",
+              "handleType": "input"
+            }
+          ]
+        }
+      ],
+      "model": {
+        "type": "bpmn:EndEvent"
+      }
+    }
+  ],
+  "variables": {
+    "globals": [
+      {
+        "id": "screened_data",
+        "direction": "in",
+        "type": "object",
+        "description": "One screened alert (ScreenedData), from csv-task",
+        "triggerNodeId": "start"
+      },
+      {
+        "id": "wle_list",
+        "direction": "in",
+        "type": "array",
+        "subType": "object",
+        "description": "The alert's watch-list entries (WleData)",
+        "triggerNodeId": "start"
+      },
+      {
+        "id": "request_id",
+        "direction": "in",
+        "type": "string",
+        "description": "request_id: the data file's name or a UUID",
+        "triggerNodeId": "start"
+      },
+      {
+        "id": "provider_id",
+        "direction": "in",
+        "type": "string",
+        "description": "provider_id: CSV on this path (Evelyn: input-task stamps it)",
+        "triggerNodeId": "start"
+      },
+      {
+        "id": "bp_run_id",
+        "direction": "in",
+        "type": "string",
+        "description": "Instance id of the CSV flow run (Evelyn: the BP run id)",
+        "triggerNodeId": "start"
+      },
+      {
+        "id": "bp_start_time",
+        "direction": "in",
+        "type": "string",
+        "description": "UTC start time of the CSV flow run (Evelyn: BP start time)",
+        "triggerNodeId": "start"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start.output",
+        "type": "object",
+        "description": "Data passed when manually triggering the process.",
+        "binding": {
+          "nodeId": "start",
+          "outputId": "output"
+        }
+      },
+      {
+        "id": "screeningSystem1.matchedCase",
+        "type": "string",
+        "description": "The label of the matched branch (true/false label)",
+        "binding": {
+          "nodeId": "screeningSystem1",
+          "outputId": "matchedCase"
+        }
+      },
+      {
+        "id": "screeningSystem1.matchedCaseId",
+        "type": "string",
+        "description": "The branch that was taken (true or false)",
+        "binding": {
+          "nodeId": "screeningSystem1",
+          "outputId": "matchedCaseId"
+        }
+      },
+      {
+        "id": "csvSchemaProducer1.output",
+        "type": "object",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "transaction_id": {
+              "title": "Transaction Id",
+              "type": "string"
+            },
+            "screened_data": {
+              "additionalProperties": true,
+              "title": "Screened Data",
+              "type": "object"
+            },
+            "wle_list": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "title": "Wle List",
+              "type": "array"
+            },
+            "request_id": {
+              "title": "Request Id",
+              "type": "string"
+            },
+            "wle_count": {
+              "title": "Wle Count",
+              "type": "integer"
+            },
+            "is_internal_request": {
+              "title": "Is Internal Request",
+              "type": "boolean"
+            }
+          }
+        },
+        "binding": {
+          "nodeId": "csvSchemaProducer1",
+          "outputId": "output"
+        }
+      },
+      {
+        "id": "csvSchemaProducer1.error",
+        "type": "object",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "required": [
+            "code",
+            "message",
+            "detail",
+            "category",
+            "status"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error code as a string"
+            },
+            "message": {
+              "type": "string",
+              "description": "High-level error message"
+            },
+            "detail": {
+              "type": "string",
+              "description": "Detailed error description"
+            },
+            "category": {
+              "type": "string",
+              "description": "Error category"
+            },
+            "status": {
+              "type": "integer",
+              "description": "HTTP status code"
+            }
+          },
+          "additionalProperties": false
+        },
+        "description": "Error information if the node fails",
+        "binding": {
+          "nodeId": "csvSchemaProducer1",
+          "outputId": "error"
+        }
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "id": "bSil8X0Fc",
+      "name": "name",
+      "type": "string",
+      "resource": "process",
+      "resourceKey": "7cdcf25b-0d9d-4303-bc3a-4fec4780bcf8",
+      "default": "EvMigCsvSchemaProducer",
+      "propertyAttribute": "name",
+      "resourceSubType": "Function"
+    },
+    {
+      "id": "b76s1j1fe",
+      "name": "folderPath",
+      "type": "string",
+      "resource": "process",
+      "resourceKey": "7cdcf25b-0d9d-4303-bc3a-4fec4780bcf8",
+      "propertyAttribute": "folderPath",
+      "resourceSubType": "Function"
+    }
+  ],
+  "layout": {
+    "nodes": {
+      "start": {
+        "position": {
+          "x": -192,
+          "y": 0
+        },
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "collapsed": false
+      },
+      "screeningSystem1": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "collapsed": false
+      },
+      "csvSchemaProducer1": {
+        "position": {
+          "x": 192,
+          "y": -16
+        },
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "collapsed": false
+      },
+      "finalResults1": {
+        "position": {
+          "x": 384,
+          "y": -16
+        },
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "collapsed": false
+      },
+      "otherProvidersNotPorted1": {
+        "position": {
+          "x": 192,
+          "y": 176
+        },
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "collapsed": false
+      }
+    }
+  }
+}

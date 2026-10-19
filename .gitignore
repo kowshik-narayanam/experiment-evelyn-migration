@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+.env
+.DS_Store
+.local-run/
+# Studio Web designer scaffolding (empty eval sets, simulations), unused
+evals/
+simulations.json
+# per-user state that `uip solution` makes when logged in (holds debug_overwrites.json), never source
+userProfile/

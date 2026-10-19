@@ -1,0 +1,17 @@
+nss_column,client_column
+input_id,Alert Id
+client_id,CLIENT
+input_full_name,"  Customer Name "
+input_alias_name,Aliases
+input_record_type,Customer Type
+input_category,Category
+input_date_1,DOB
+input_date_type_1,DOB Type
+input_address_1_country,Country
+alert_gold_resolution,
+hit_id,Hit Id
+hit_record_type,Hit Type
+hit_category,Hit Category
+hit_matched_name,"MATCHED_name "
+hit_address_1_country,Hit Country
+hit_gold_resolution,

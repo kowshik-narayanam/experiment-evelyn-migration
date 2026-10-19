@@ -1,0 +1,38 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigCsvFileIngestionFlow",
+    "kind": "process",
+    "type": "flow",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "d76e3e8f-96f7-4dc7-981c-1df10da5b48e",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "EvMigCsvFileIngestionFlow"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "runtimeProfile": "Standard",
+      "type": "Flow",
+      "name": "EvMigCsvFileIngestionFlow",
+      "package": {
+        "key": "5c474ae0-7b97-46ef-a964-4654d5d9c933"
+      },
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "79a0460e-646d-4c72-8713-5fd61949d70a",
+    "files": []
+  }
+}

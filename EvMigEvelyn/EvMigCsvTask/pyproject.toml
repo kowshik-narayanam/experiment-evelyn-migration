@@ -1,0 +1,24 @@
+[project]
+name = "EvMigCsvTask"
+version = "0.0.1"
+description = "EvMigCsvTask"
+authors = [{ name = "John Doe", email = "john.doe@myemail.com" }]
+dependencies = [
+    "evmig-nss",
+    "pydantic>=2.10,<3",
+    "uipath>=2.14.0, <2.15.0",
+]
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.uv.sources]
+evmig-nss = { path = "wheels/evmig_nss-0.1.1-py3-none-any.whl" }
+
+[tool.pytest.ini_options]
+# main.py and its modules sit in this folder, the test helpers in tests/.
+testpaths = ["tests"]
+pythonpath = [".", "tests"]

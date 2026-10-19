@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigNamesScreeningFlow",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "12b84229-e71c-43c2-a3be-fc2536cfb246",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "EvMigNamesScreeningFlow"
+    },
+    "locks": [],
+    "key": "96027f7a-0ca7-4cbc-bb45-2271028b51f3",
+    "files": []
+  }
+}

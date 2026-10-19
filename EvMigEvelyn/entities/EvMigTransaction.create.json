@@ -1,0 +1,91 @@
+{
+  "displayName": "EvMigTransaction",
+  "description": "Port of Evelyn table ds_uc_B_AML_PEP_transaction_v3_0, final state of its Liquibase changesets (docs/mapping.md §8.1).",
+  "fields": [
+    {
+      "name": "Uuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "isRequired": true,
+      "isUnique": true,
+      "description": "Evelyn column uuid (NVARCHAR(36)), 030_transaction_table.yaml"
+    },
+    {
+      "name": "StartTime",
+      "type": "DATETIME_WITH_TZ",
+      "description": "Evelyn column start_time (DATETIME2), 030_transaction_table.yaml"
+    },
+    {
+      "name": "EndTime",
+      "type": "DATETIME_WITH_TZ",
+      "description": "Evelyn column end_time (DATETIME2), 030_transaction_table.yaml"
+    },
+    {
+      "name": "Status",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column status (NVARCHAR(36)), 030_transaction_table.yaml"
+    },
+    {
+      "name": "StartBpUuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column start_bp_uuid (NVARCHAR(36)), 030_transaction_table.yaml"
+    },
+    {
+      "name": "BpStartTime",
+      "type": "DATETIME_WITH_TZ",
+      "description": "Evelyn column bp_start_time (DATETIME2), 034_3_alter_transaction_table.yaml"
+    },
+    {
+      "name": "ErrorMessage",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column error_message (nvarchar(max)), 034_3_alter_transaction_table.yaml"
+    },
+    {
+      "name": "ErrorStep",
+      "type": "MULTILINE_TEXT",
+      "lengthLimit": 10000,
+      "description": "Evelyn column error_step (nvarchar(max)), 034_3_alter_transaction_table.yaml"
+    },
+    {
+      "name": "DwVariation",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column dw_variation (nvarchar(255)), 034_3_alter_transaction_table.yaml"
+    },
+    {
+      "name": "DwVersion",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column dw_version (nvarchar(255)), 034_3_alter_transaction_table.yaml"
+    },
+    {
+      "name": "ModelVersion",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column model_version (nvarchar(255)), 034_3_alter_transaction_table.yaml"
+    },
+    {
+      "name": "ExtRecordId",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "description": "Evelyn column ext_record_id (nvarchar(255)), 036_add_ext_record_id_to_transaction_table.yaml"
+    },
+    {
+      "name": "ClientId",
+      "type": "STRING",
+      "lengthLimit": 255,
+      "isRequired": true,
+      "defaultValue": "1",
+      "description": "Evelyn column client_id (NVARCHAR(255)), 044_add_client_id_column.yaml"
+    },
+    {
+      "name": "OriginalTransactionUuid",
+      "type": "STRING",
+      "lengthLimit": 36,
+      "description": "Evelyn column original_transaction_uuid (NVARCHAR(36)), 048_add_original_transaction_uuid_to_transaction_table.yaml"
+    }
+  ]
+}

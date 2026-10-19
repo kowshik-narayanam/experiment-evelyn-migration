@@ -1,0 +1,66 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "0d1b1f50-ca34-45d3-bcc0-081626bcb4df",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "title": "MonitorIn"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "rows": {
+                        "items": {
+                            "properties": {
+                                "data_file_location": {
+                                    "title": "Data File Location",
+                                    "type": "string"
+                                },
+                                "format_file_location": {
+                                    "title": "Format File Location",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "data_file_location",
+                                "format_file_location"
+                            ],
+                            "title": "DataFileRow",
+                            "type": "object"
+                        },
+                        "title": "Rows",
+                        "type": "array"
+                    },
+                    "bp_start_time": {
+                        "title": "Bp Start Time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "rows",
+                    "bp_start_time"
+                ],
+                "title": "MonitorOut"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "main.py:63",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "main.py"
+                        }
+                    }
+                ],
+                "edges": []
+            }
+        }
+    ]
+}

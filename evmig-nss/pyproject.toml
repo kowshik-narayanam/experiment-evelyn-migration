@@ -1,0 +1,22 @@
+[project]
+name = "evmig-nss"
+version = "0.1.1"
+description = "Evelyn (Names Sanctions Screening) logic shared by the three EvMig functions, shipped to them as a wheel"
+requires-python = ">=3.11"
+dependencies = [
+    "uipath>=2.14.0,<2.15.0",
+    "pydantic>=2.10,<3",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]

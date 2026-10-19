@@ -1,0 +1,38 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigNamesScreeningFlow",
+    "kind": "process",
+    "type": "flow",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "12b84229-e71c-43c2-a3be-fc2536cfb246",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "EvMigNamesScreeningFlow"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "runtimeProfile": "Standard",
+      "type": "Flow",
+      "name": "EvMigNamesScreeningFlow",
+      "package": {
+        "key": "96027f7a-0ca7-4cbc-bb45-2271028b51f3"
+      },
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "07ac2d86-030d-4b9f-82ea-72ab657d43d2",
+    "files": []
+  }
+}

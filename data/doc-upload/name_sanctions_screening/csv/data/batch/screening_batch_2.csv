@@ -1,0 +1,4 @@
+﻿ Alert Id ,Customer Name ,Customer Type,DOB,DOB Type,Hit Id,Hit Type,MATCHED_name
+B-300,,INDIVIDUAL,01/01/1980,DOB,H-4,INDIVIDUAL,Gill Bates Jr
+,Gill Bates,INDIVIDUAL,12/25/1990,DOB,H-5,INDIVIDUAL,Gil Bates
+B-300,Gill Bates,INDIVIDUAL,01/01/1980,DOB,H-6,INDIVIDUAL,Gill Gates

@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigFiles",
+    "kind": "bucket",
+    "type": "orchestratorBucket",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "EvMigFiles",
+      "type": "Orchestrator"
+    },
+    "locks": [],
+    "key": "2e43a282-9aaa-46e5-8996-ce9d90edc75a",
+    "files": []
+  }
+}

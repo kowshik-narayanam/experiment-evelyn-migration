@@ -1,0 +1,1563 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "fa1ac869-e1a5-4dbd-9ff8-a7e740da83f8",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "format_file_location": {
+                        "title": "Format File Location",
+                        "type": "string"
+                    },
+                    "data_file_location": {
+                        "title": "Data File Location",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "format_file_location",
+                    "data_file_location"
+                ],
+                "title": "CsvTaskInput"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "rows": {
+                        "items": {
+                            "description": "One output row: an alert with its hits, or the stop row.",
+                            "properties": {
+                                "screened_data": {
+                                    "properties": {
+                                        "uuid": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null,
+                                            "title": "Uuid"
+                                        },
+                                        "id": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null,
+                                            "title": "Id"
+                                        },
+                                        "clientId": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": "1",
+                                            "title": "Clientid"
+                                        },
+                                        "category": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null,
+                                            "title": "Category"
+                                        },
+                                        "entityType": {
+                                            "anyOf": [
+                                                {
+                                                    "enum": [
+                                                        "INDIVIDUAL",
+                                                        "ORGANIZATION",
+                                                        "SECURITIES",
+                                                        "LOCATION"
+                                                    ],
+                                                    "title": "EntityType",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null
+                                        },
+                                        "gender": {
+                                            "anyOf": [
+                                                {
+                                                    "enum": [
+                                                        "MALE",
+                                                        "FEMALE",
+                                                        "OTHER"
+                                                    ],
+                                                    "title": "Gender",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null
+                                        },
+                                        "name": {
+                                            "anyOf": [
+                                                {
+                                                    "properties": {
+                                                        "fullName": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "type": "string"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ],
+                                                            "default": null,
+                                                            "title": "Fullname"
+                                                        },
+                                                        "firstName": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "type": "string"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ],
+                                                            "default": null,
+                                                            "title": "Firstname"
+                                                        },
+                                                        "lastName": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "type": "string"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ],
+                                                            "default": null,
+                                                            "title": "Lastname"
+                                                        },
+                                                        "middleName": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "type": "string"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ],
+                                                            "default": null,
+                                                            "title": "Middlename"
+                                                        },
+                                                        "derived": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "type": "string"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ],
+                                                            "default": null,
+                                                            "title": "Derived"
+                                                        },
+                                                        "source": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "type": "string"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ],
+                                                            "default": null,
+                                                            "title": "Source"
+                                                        }
+                                                    },
+                                                    "title": "NameEntity",
+                                                    "type": "object"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null
+                                        },
+                                        "dates": {
+                                            "anyOf": [
+                                                {
+                                                    "items": {
+                                                        "anyOf": [
+                                                            {
+                                                                "properties": {
+                                                                    "original": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Type"
+                                                                                    },
+                                                                                    "full": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Full"
+                                                                                    },
+                                                                                    "year": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Year"
+                                                                                    },
+                                                                                    "month": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Month"
+                                                                                    },
+                                                                                    "day": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Day"
+                                                                                    }
+                                                                                },
+                                                                                "title": "DetailedDate",
+                                                                                "type": "object"
+                                                                            },
+                                                                            {
+                                                                                "type": "null"
+                                                                            }
+                                                                        ],
+                                                                        "default": null
+                                                                    },
+                                                                    "derived": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Type"
+                                                                                    },
+                                                                                    "full": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Full"
+                                                                                    },
+                                                                                    "year": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Year"
+                                                                                    },
+                                                                                    "month": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Month"
+                                                                                    },
+                                                                                    "day": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Day"
+                                                                                    }
+                                                                                },
+                                                                                "title": "DetailedDate",
+                                                                                "type": "object"
+                                                                            },
+                                                                            {
+                                                                                "type": "null"
+                                                                            }
+                                                                        ],
+                                                                        "default": null
+                                                                    },
+                                                                    "source": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "type": "string"
+                                                                            },
+                                                                            {
+                                                                                "type": "null"
+                                                                            }
+                                                                        ],
+                                                                        "default": null,
+                                                                        "title": "Source"
+                                                                    }
+                                                                },
+                                                                "title": "DateEntity",
+                                                                "type": "object"
+                                                            },
+                                                            {
+                                                                "type": "null"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "title": "Dates"
+                                        },
+                                        "locations": {
+                                            "anyOf": [
+                                                {
+                                                    "items": {
+                                                        "properties": {
+                                                            "original": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "properties": {
+                                                                            "type": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "Type"
+                                                                            },
+                                                                            "country": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "Country"
+                                                                            },
+                                                                            "state": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "State"
+                                                                            },
+                                                                            "city": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "City"
+                                                                            },
+                                                                            "street": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "Street"
+                                                                            },
+                                                                            "address": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "Address"
+                                                                            },
+                                                                            "latitude": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "Latitude"
+                                                                            },
+                                                                            "longitude": {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "null"
+                                                                                    }
+                                                                                ],
+                                                                                "default": null,
+                                                                                "title": "Longitude"
+                                                                            }
+                                                                        },
+                                                                        "title": "Location",
+                                                                        "type": "object"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null
+                                                            },
+                                                            "enriched": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Type"
+                                                                                },
+                                                                                "country": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Country"
+                                                                                },
+                                                                                "state": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "State"
+                                                                                },
+                                                                                "city": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "City"
+                                                                                },
+                                                                                "street": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Street"
+                                                                                },
+                                                                                "address": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Address"
+                                                                                },
+                                                                                "latitude": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Latitude"
+                                                                                },
+                                                                                "longitude": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Longitude"
+                                                                                }
+                                                                            },
+                                                                            "title": "Location",
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "title": "Enriched"
+                                                            },
+                                                            "source": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Source"
+                                                            }
+                                                        },
+                                                        "title": "LocationEntity",
+                                                        "type": "object"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "title": "Locations"
+                                        },
+                                        "aliases": {
+                                            "anyOf": [
+                                                {
+                                                    "items": {
+                                                        "properties": {
+                                                            "fullName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Fullname"
+                                                            },
+                                                            "firstName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Firstname"
+                                                            },
+                                                            "lastName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Lastname"
+                                                            },
+                                                            "middleName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Middlename"
+                                                            },
+                                                            "derived": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Derived"
+                                                            },
+                                                            "source": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Source"
+                                                            }
+                                                        },
+                                                        "title": "NameEntity",
+                                                        "type": "object"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "title": "Aliases"
+                                        },
+                                        "identifiers": {
+                                            "anyOf": [
+                                                {
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "title": "Identifiers"
+                                        },
+                                        "additionalData": {
+                                            "anyOf": [
+                                                {
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "title": "Additionaldata"
+                                        },
+                                        "goldDecision": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null,
+                                            "title": "Golddecision"
+                                        },
+                                        "addToOngoingMonitor": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "boolean"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": false,
+                                            "title": "Addtoongoingmonitor"
+                                        },
+                                        "originalTransaction": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ],
+                                            "default": null,
+                                            "title": "Originaltransaction"
+                                        }
+                                    },
+                                    "title": "ScreenedData",
+                                    "type": "object"
+                                },
+                                "wle_list": {
+                                    "items": {
+                                        "properties": {
+                                            "uuid": {
+                                                "anyOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null,
+                                                "title": "Uuid"
+                                            },
+                                            "id": {
+                                                "anyOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null,
+                                                "title": "Id"
+                                            },
+                                            "category": {
+                                                "anyOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null,
+                                                "title": "Category"
+                                            },
+                                            "entityType": {
+                                                "anyOf": [
+                                                    {
+                                                        "enum": [
+                                                            "INDIVIDUAL",
+                                                            "ORGANIZATION",
+                                                            "SECURITIES",
+                                                            "LOCATION"
+                                                        ],
+                                                        "title": "EntityType",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null
+                                            },
+                                            "gender": {
+                                                "anyOf": [
+                                                    {
+                                                        "enum": [
+                                                            "MALE",
+                                                            "FEMALE",
+                                                            "OTHER"
+                                                        ],
+                                                        "title": "Gender",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null
+                                            },
+                                            "name": {
+                                                "anyOf": [
+                                                    {
+                                                        "properties": {
+                                                            "fullName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Fullname"
+                                                            },
+                                                            "firstName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Firstname"
+                                                            },
+                                                            "lastName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Lastname"
+                                                            },
+                                                            "middleName": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Middlename"
+                                                            },
+                                                            "derived": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Derived"
+                                                            },
+                                                            "source": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ],
+                                                                "default": null,
+                                                                "title": "Source"
+                                                            }
+                                                        },
+                                                        "title": "NameEntity",
+                                                        "type": "object"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null
+                                            },
+                                            "dates": {
+                                                "anyOf": [
+                                                    {
+                                                        "items": {
+                                                            "anyOf": [
+                                                                {
+                                                                    "properties": {
+                                                                        "original": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Type"
+                                                                                        },
+                                                                                        "full": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Full"
+                                                                                        },
+                                                                                        "year": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Year"
+                                                                                        },
+                                                                                        "month": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Month"
+                                                                                        },
+                                                                                        "day": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Day"
+                                                                                        }
+                                                                                    },
+                                                                                    "title": "DetailedDate",
+                                                                                    "type": "object"
+                                                                                },
+                                                                                {
+                                                                                    "type": "null"
+                                                                                }
+                                                                            ],
+                                                                            "default": null
+                                                                        },
+                                                                        "derived": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Type"
+                                                                                        },
+                                                                                        "full": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Full"
+                                                                                        },
+                                                                                        "year": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Year"
+                                                                                        },
+                                                                                        "month": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Month"
+                                                                                        },
+                                                                                        "day": {
+                                                                                            "anyOf": [
+                                                                                                {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "null"
+                                                                                                }
+                                                                                            ],
+                                                                                            "default": null,
+                                                                                            "title": "Day"
+                                                                                        }
+                                                                                    },
+                                                                                    "title": "DetailedDate",
+                                                                                    "type": "object"
+                                                                                },
+                                                                                {
+                                                                                    "type": "null"
+                                                                                }
+                                                                            ],
+                                                                            "default": null
+                                                                        },
+                                                                        "source": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                {
+                                                                                    "type": "null"
+                                                                                }
+                                                                            ],
+                                                                            "default": null,
+                                                                            "title": "Source"
+                                                                        }
+                                                                    },
+                                                                    "title": "DateEntity",
+                                                                    "type": "object"
+                                                                },
+                                                                {
+                                                                    "type": "null"
+                                                                }
+                                                            ]
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "title": "Dates"
+                                            },
+                                            "locations": {
+                                                "anyOf": [
+                                                    {
+                                                        "items": {
+                                                            "properties": {
+                                                                "original": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Type"
+                                                                                },
+                                                                                "country": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Country"
+                                                                                },
+                                                                                "state": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "State"
+                                                                                },
+                                                                                "city": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "City"
+                                                                                },
+                                                                                "street": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Street"
+                                                                                },
+                                                                                "address": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Address"
+                                                                                },
+                                                                                "latitude": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Latitude"
+                                                                                },
+                                                                                "longitude": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "null"
+                                                                                        }
+                                                                                    ],
+                                                                                    "default": null,
+                                                                                    "title": "Longitude"
+                                                                                }
+                                                                            },
+                                                                            "title": "Location",
+                                                                            "type": "object"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null
+                                                                },
+                                                                "enriched": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Type"
+                                                                                    },
+                                                                                    "country": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Country"
+                                                                                    },
+                                                                                    "state": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "State"
+                                                                                    },
+                                                                                    "city": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "City"
+                                                                                    },
+                                                                                    "street": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Street"
+                                                                                    },
+                                                                                    "address": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Address"
+                                                                                    },
+                                                                                    "latitude": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Latitude"
+                                                                                    },
+                                                                                    "longitude": {
+                                                                                        "anyOf": [
+                                                                                            {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "null"
+                                                                                            }
+                                                                                        ],
+                                                                                        "default": null,
+                                                                                        "title": "Longitude"
+                                                                                    }
+                                                                                },
+                                                                                "title": "Location",
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": "array"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "title": "Enriched"
+                                                                },
+                                                                "source": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Source"
+                                                                }
+                                                            },
+                                                            "title": "LocationEntity",
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "title": "Locations"
+                                            },
+                                            "aliases": {
+                                                "anyOf": [
+                                                    {
+                                                        "items": {
+                                                            "properties": {
+                                                                "fullName": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Fullname"
+                                                                },
+                                                                "firstName": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Firstname"
+                                                                },
+                                                                "lastName": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Lastname"
+                                                                },
+                                                                "middleName": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Middlename"
+                                                                },
+                                                                "derived": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Derived"
+                                                                },
+                                                                "source": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "null"
+                                                                        }
+                                                                    ],
+                                                                    "default": null,
+                                                                    "title": "Source"
+                                                                }
+                                                            },
+                                                            "title": "NameEntity",
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "title": "Aliases"
+                                            },
+                                            "identifiers": {
+                                                "anyOf": [
+                                                    {
+                                                        "additionalProperties": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "title": "Identifiers"
+                                            },
+                                            "additionalData": {
+                                                "anyOf": [
+                                                    {
+                                                        "additionalProperties": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "title": "Additionaldata"
+                                            },
+                                            "goldDecision": {
+                                                "anyOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ],
+                                                "default": null,
+                                                "title": "Golddecision"
+                                            }
+                                        },
+                                        "title": "WleData",
+                                        "type": "object"
+                                    },
+                                    "type": "array"
+                                },
+                                "request_id": {
+                                    "type": "string"
+                                },
+                                "stop": {
+                                    "type": "string"
+                                }
+                            },
+                            "title": "CsvTaskRow",
+                            "type": "object"
+                        },
+                        "title": "Rows",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "rows"
+                ],
+                "title": "CsvTaskOutput"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "main.py:60",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "main.py"
+                        }
+                    }
+                ],
+                "edges": []
+            }
+        }
+    ]
+}

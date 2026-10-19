@@ -1,0 +1,8 @@
+ Alert Id ,CLIENT, Customer Name ,Customer Type,Category,Aliases,DOB,DOB Type,Country,Hit Id,Hit Type,Hit Category,MATCHED_name,Hit Country
+A-100,7,Alice Wonderland,INDIVIDUAL,high,Ally Wonder,06/10/1991,DOB,UK,H-1,INDIVIDUAL,sanctions,Alice Wonderland-Smith,UK
+A-200,7,John Doe,INDIVIDUAL,low,,03/04/1985,DOB,US,H-9,INDIVIDUAL,pep,Jon Doe,US
+A-100,7,Alice Wonderland,INDIVIDUAL,high,Ally Wonder,06/10/1991,DOB,UK,H-2,INDIVIDUAL,sanctions,Alicia Wonderland,UK
+
+A-200,7,John Doe,INDIVIDUAL,low,,03/04/1985,DOB,US,H-9,INDIVIDUAL,pep,Johnny Doe,US
+A-100,7,Alice Wonderland,INDIVIDUAL,high,Ally Wonder,06/10/1991,DOB,UK,H-3,LOCATION,sanctions,Wonderland,UK
+A-200,7,John Doe,INDIVIDUAL,low,,03/04/1985,DOB,US,H-10,INDIVIDUAL,pep,,US

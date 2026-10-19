@@ -1,0 +1,15 @@
+{
+  "provider": {
+    "FORMAT_FILE_LOCATION": "doc-upload/name_sanctions_screening/csv/nss_input_format.csv",
+    "CSV_DATA_FILE_LOCATION": "doc-upload/name_sanctions_screening/csv/data/"
+  },
+  "configuration": {
+    "proceed_with_error_data": true,
+    "keep_input_file_name_for_qc_report": true
+  },
+  "model": {
+    "thresholds": {
+      "location_wle_enable": false
+    }
+  }
+}

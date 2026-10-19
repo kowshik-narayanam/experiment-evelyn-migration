@@ -1,0 +1,37 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "EvMigCsvMonitorTask",
+    "kind": "process",
+    "type": "function",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "cafa7601-3b55-41ed-b213-ebbcbc96e040",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "EvMigCsvMonitorTask"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Function",
+      "name": "EvMigCsvMonitorTask",
+      "package": {
+        "key": "61792fcc-eea0-49bc-bde1-03c976790138"
+      },
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "ddc7e5ed-cb4d-4bd8-be86-a6233d707b50",
+    "files": []
+  }
+}
