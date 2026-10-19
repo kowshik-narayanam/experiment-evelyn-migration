@@ -25,15 +25,15 @@ class AnalyticsService:
     def init_full_analytics(self, transaction: Transaction, screened_data: ScreenedData, wle_data_list: list[WleData] | None) -> None:
         """J:service/AnalyticsService.java:84: the alert row, then the hit rows."""
         self.init_alert_analytics(transaction, screened_data)
-        self.init_hits_analytics(transaction.Uuid, wle_data_list)
+        self.init_hits_analytics(transaction.TransactionUuid, wle_data_list)
 
     def init_alert_analytics(self, transaction: Transaction, screened_data: ScreenedData) -> None:
         """J:service/AnalyticsService.java:33 and :44 (the 2-argument overload calls the long one). One alert row per
         transaction: written only when none exists, so a rerun does not duplicate it."""
-        if self._alerts.find_by_transaction_uuid(transaction.Uuid):
+        if self._alerts.find_by_transaction_uuid(transaction.TransactionUuid):
             return
         alert = AlertAnalytics(
-            TransactionUuid=transaction.Uuid,
+            TransactionUuid=transaction.TransactionUuid,
             OriginalTransactionUuid=screened_data.originalTransaction,
             ClientId=screened_data.clientId,
             AlertId=screened_data.id,

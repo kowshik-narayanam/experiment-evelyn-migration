@@ -57,7 +57,7 @@ class TransactionService:
         "transaction '<uuid>' already exist" and returns its own, unsaved, row, as Java does.
         """
         transaction = Transaction(
-            Uuid=uuid,
+            TransactionUuid=uuid,
             OriginalTransactionUuid=original_transaction_uuid,
             ClientId=client_id,
             StartBpUuid=self._run_context.bp_run_id,
@@ -72,5 +72,5 @@ class TransactionService:
         try:
             return self._repository.save(transaction)
         except DataIntegrityViolationError:
-            logger.warning("transaction '%s' already exist", transaction.Uuid)
+            logger.warning("transaction '%s' already exist", transaction.TransactionUuid)
             return transaction

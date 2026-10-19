@@ -3,6 +3,7 @@
 For every column row in §8.1-8.3 it reads the Liquibase `type:` on the line after the cited `name:` line, checks that
 the Data Fabric type in the mapping follows DEC-6 (NVARCHAR(n) -> STRING n, NVARCHAR(MAX) -> MULTILINE_TEXT 10,000,
 DATETIME2 -> DATETIME_WITH_TZ, autoQC/ticker -> BOOLEAN), then compares the entity files with the mapping.
+A field name the tenant refused (REFUSED_BY_TENANT) fails the check too.
 Usage: python3 -I scripts/entities.py          (check; exit 1 on any difference)
        python3 -I scripts/entities.py --write  (rewrite the three files)
 """
@@ -14,6 +15,9 @@ M = Path("/Users/knarayanam/WorkfusionRepos/NSS/names-screening/names-screening-
 OUT = REPO / "EvMigEvelyn" / "entities"
 SECTIONS = {"8.1": "EvMigTransaction", "8.2": "EvMigAlertAnalytics", "8.3": "EvMigHitAnalytics"}
 BOOLEAN_COLUMNS = {"autoQC", "ticker"}  # DEC-6: Evelyn writes Java booleans into these NVARCHAR(5) columns
+# Field names the tenant refuses although `uip df entities create` lets them through (its own list is only Id, CreatedBy,
+# CreateTime, UpdatedBy, UpdateTime, RecordOwner, Version and C#/VB keywords). Lower case. Add each one a tenant refuses.
+REFUSED_BY_TENANT = {"uuid"}  # "Field name for 'Uuid' is a reserved SQL word …" (owner's tenant run, 2026-10-19)
 
 
 def expected_type(column, sql):
@@ -51,6 +55,8 @@ def entities_from_mapping():
             cells = [c.strip() for c in row.strip("|").split("|")]
             i = next(k for k, c in enumerate(cells) if k > 1 and re.fullmatch(r"`[A-Z][A-Za-z0-9]*`", c))
             name, df_cell, sql = cells[i].strip("`"), cells[i + 1], cells[2].split(",")[0].strip()
+            if name.lower() in REFUSED_BY_TENANT:
+                errors.append(f"{entity}.{name}: Data Fabric refuses this field name (REFUSED_BY_TENANT)")
             yaml_sql = (M / file).read_text(encoding="utf-8").split("\n")[line].split("type:")[1].strip()
             if yaml_sql.upper() != sql.upper():
                 errors.append(f"{entity}.{name}: mapping says {sql}, {file}:{line + 1} says {yaml_sql}")

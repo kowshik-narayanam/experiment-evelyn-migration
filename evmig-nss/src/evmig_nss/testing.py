@@ -3,8 +3,9 @@
 The three functions' tests reuse them, and so does a local run without a tenant (core/sdk.py): one implementation.
 Neither fake logs in or touches the network. They are strict where that catches a regression, not everywhere the real
 services are: FakeBuckets refuses a list prefix ending in "/" and pages its answers, and, like the SDK, writes an error
-body instead of raising when a file is missing (MISSING_BLOB_BODY). FakeEntities refuses a duplicate Uuid, a page larger
-than Data Fabric's 1,000 and an unknown field. The last one is STRICTER than the tenant, which drops an unknown field
+body instead of raising when a file is missing (MISSING_BLOB_BODY). FakeEntities refuses an entity with a field name the
+tenant refuses (`Uuid`), a duplicate value of each entity's unique uuid field, a page larger than Data Fabric's 1,000
+and an unknown field. The last one is STRICTER than the tenant, which drops an unknown field
 silently (owner's review, 2026-10-19), so a misnamed field would pass on the tenant and be lost; the fake's refusal
 only helps for fields the models send. What guards the names is tests/test_entity_files.py, which compares each row
 model's fields with EvMigEvelyn/entities/*.create.json.
@@ -44,6 +45,18 @@ ENTITY_FIELDS = {
     ALERT_ENTITY_NAME: set(AlertAnalytics.model_fields),
     HIT_ENTITY_NAME: set(HitAnalytics.model_fields),
 }
+# Each entity's unique field: its own uuid (isUnique in EvMigEvelyn/entities/*.create.json).
+UNIQUE_FIELDS = {TRANSACTION_ENTITY_NAME: "TransactionUuid", ALERT_ENTITY_NAME: "AlertUuid", HIT_ENTITY_NAME: "HitUuid"}
+# Field names the tenant refuses when the entity is created, lower case (owner's tenant run, 2026-10-19). The CLI's own
+# check lets them through. scripts/entities.py keeps the same list for the entity files.
+REFUSED_FIELD_NAMES = {"uuid"}
+
+
+def refused_field_name_error(name: str) -> str | None:
+    """The tenant's text for a refused field name, or None."""
+    if name.lower() in REFUSED_FIELD_NAMES:
+        return f"Field name for '{name}' is a reserved SQL word and cannot be used as an entity or field name."
+    return None
 
 
 def sdk_http_error(status_code: int = 403, url: str = "https://cloud.uipath.com/org/tenant/orchestrator_/odata/Buckets") -> EnrichedException:
@@ -129,6 +142,10 @@ class FakeEntities:
     """
 
     def __init__(self, path: str | Path | None = None, page_limit: int = 1000):
+        for fields in ENTITY_FIELDS.values():  # as the tenant refuses `uip df entities create` for such a field
+            for field in sorted(fields):
+                if error := refused_field_name_error(field):
+                    raise ValueError(error)
         self.path = None if path is None else Path(path)
         self.page_limit = page_limit  # Data Fabric answers at most 1,000 rows per query
         self.rows: dict[str, list[dict]] = {f"{name}-entity": [] for name in ENTITY_FIELDS}
@@ -161,7 +178,8 @@ class FakeEntities:
             return f"Field not found: {sorted(unknown)}"
         if self.reject is not None and (error := self.reject(key, data)):
             return error
-        if any(row["Uuid"] == data.get("Uuid") for row in self.rows[key]):
+        unique = UNIQUE_FIELDS[self._name(key)]
+        if any(row.get(unique) == data.get(unique) for row in self.rows[key]):
             return "Insert data failed. Value uniqueness violation. Error Number: 2627"
         return None
 

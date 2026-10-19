@@ -23,7 +23,7 @@ class TransactionStatus(str, Enum):
 
 
 class Transaction(DataFabricRow):
-    Uuid: str = Field(default_factory=lambda: str(uuid.uuid4()))  # uuid
+    TransactionUuid: str = Field(default_factory=lambda: str(uuid.uuid4()))  # uuid; not `Uuid`, which Data Fabric refuses (D-5)
     StartTime: datetime | None = None  # start_time
     EndTime: datetime | None = None  # end_time
     Status: TransactionStatus | None = None  # status

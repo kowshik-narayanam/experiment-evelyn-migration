@@ -55,7 +55,7 @@ forced change gets a D-number in `docs/differences.md`.
 
 | Check | Command (from the repo root) | Expect |
 |---|---|---|
-| Library | `cd evmig-nss && uv run pytest -q` | `457 passed` |
+| Library | `cd evmig-nss && uv run pytest -q` | `465 passed` |
 | Monitor | `cd EvMigEvelyn/EvMigCsvMonitorTask && uv run pytest -q` | `33 passed` |
 | csv-task | `cd EvMigEvelyn/EvMigCsvTask && uv run pytest -q` | `148 passed` |
 | Producer | `cd EvMigEvelyn/EvMigCsvSchemaProducer && uv run pytest -q` | `35 passed` |

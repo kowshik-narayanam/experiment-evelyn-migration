@@ -32,7 +32,7 @@ Simulation does: `SIM:Dependency Simulation/DependencySim/DependencySimFunction/
 | | Evidence |
 |---|---|
 | For | Your level-3 run installed the vendored wheel from the lock on the tenant: `SIM:Dependency Simulation/HOW_TO_RUN.md:14` “Level 3 was run on a tenant the same day”, `SIM:Dependency Simulation/HOW_TO_RUN.md:410` “Does `library_version` come back as `1.0.0`?” (answer "Yes"). This text is an **uncommitted** edit in that repo |
-| Not yet proved | That wheel has no dependencies. `evmig-nss` will declare `pydantic` and `uipath`, which every function already locks, so the install resolves no new package (**Inference**) |
+| Proved with dependencies | That wheel had none. `evmig-nss` declares `pydantic` and `uipath`, and it installed from the lock in a debug job: the job log had “+ evmig-nss==0.1.2 (from file:///tmp/home/.job-data/<id>/wheels/...)” (owner's tenant run, 2026-10-19) |
 | Precedent against | No project in `W` ships its own code as a wheel. Evan copies 11 shared files with a script and a test: `W:Evan/tools/sync_shared_code.py:38` “SHARED = (”, `W:Evan/tests/project/test_shared_code_is_identical.py:32` “assert len(sync_shared_code.SHARED) == 11”. Isaac copies too |
 | Traps | A changed wheel under the same version is refused by `uv` (`SIM:Dependency Simulation/README.md:574` “Hash mismatch for evsim-calc”), so every change bumps the version. The tenant installs from `uv.lock`, so the lock is refreshed before every pack: `W:shared/docs/uipath-deployment-pitfalls.md:346` “Refresh the lockfile before you pack.” |
 
@@ -107,7 +107,7 @@ Evelyn takes these from the WorkFusion task context; a Python function has none 
 |---|---|---|
 | `start_bp_uuid` | the **main** BP run's id: `J:utils/ExecutionUtils.java:45` “taskExecutionContext.getBpExecutionUuid()” | the CSV flow's own instance id, `=js:$metadata.InstanceId`, passed to every main-flow run as `bp_run_id`. The producer refuses an empty value. If the id turns out empty at runtime, the prompt's fallback applies: the monitor generates a UUID |
 | `bp_start_time` | that run's start time, fetched from Control Tower: `J:utils/ExecutionUtils.java:50` “controlTowerBpService.getBpDetails(bpRunUuid)” | the UTC time `csv-monitor-task` starts, returned in its output as `bp_start_time` (Q3) |
-| `dw_variation` | the variation (a configured copy of the worker): `J:utils/ExecutionUtils.java:62` “.map(InstanceConfiguration::getConfigurationId)”, else "" | the job's folder key, from the environment variable the SDK reads (`SDK:constants/__init__.py:18` “ENV_FOLDER_KEY = "UIPATH_FOLDER_KEY"”); "" when absent, Evelyn's own fallback. A Flow could pass `$metadata.FolderKey` instead (`CLI:headless-5kfya4w8.js:205382` “FolderKey: string;”). A deployment folder holds its own configuration file, so it is the closest thing to a variation (**Inference**); in a debug run it is the `Debug_<Flow>` folder (Q4) |
+| `dw_variation` | the variation (a configured copy of the worker): `J:utils/ExecutionUtils.java:62` “.map(InstanceConfiguration::getConfigurationId)”, else "" | the job's folder key, from the environment variable the SDK reads (`SDK:constants/__init__.py:18` “ENV_FOLDER_KEY = "UIPATH_FOLDER_KEY"”); "" when absent, Evelyn's own fallback. A Flow could pass `$metadata.FolderKey` instead (`CLI:headless-5kfya4w8.js:205382` “FolderKey: string;”). A deployment folder holds its own configuration file, so it is the closest thing to a variation (**Inference**). In a debug run it is your personal workspace, where the function jobs run, not the `Debug_<Flow>` folder (owner's tenant run, 2026-10-19; Q4) |
 | `dw_version`, `model_version` | build properties: `JR:usecase.properties:3` “version=${usecase.version}” (4.5.0-dev), `JR:usecase.properties:5` “ml-model=${usecase.ml-model}” | `evmig-nss`'s version, and the constant `nss-classification-model-v5.3.0` from `E:pom.xml:21` “nss-classification-model-v5.3.0” (Q5) |
 | (`provider_id`, not a column) | `input-task.afterRunning`, from `configuration.INPUT_TYPE` (mapping claim 12a) | main-flow input, set to `"CSV"` by the CSV flow (Q2) |
 
@@ -137,11 +137,12 @@ requests; nothing on this path depends on that).
   `MULTILINE_MAX` must be enabled per tenant (`W:Evan/docs/data-fabric.md:126` “**`MULTILINE_MAX` is a tenant feature.**”);
   `DATETIME2` → `DATETIME_WITH_TZ`, written in UTC (`W:Evan/docs/data-fabric.md:121` “`datetime2` is `DATETIME_WITH_TZ`”);
   `autoQC` and `ticker` → `BOOLEAN`, because Evelyn writes Java booleans into those `NVARCHAR(5)` columns (Q7).
-- **Keys:** `Uuid` is required and unique in all three (Evelyn's only constraint per table). `ClientId` is required with
-  default "1". Evelyn's ten other indexes are not carried (mapping §8.4, D-5).
+- **Keys:** each table's own uuid is required and unique (Evelyn's only constraint per table). It was `Uuid`; since
+  the tenant run of 2026-10-19 it is `TransactionUuid`, `AlertUuid`, `HitUuid`, because Data Fabric refuses `Uuid`
+  (D-5). `ClientId` is required with default "1". Evelyn's ten other indexes are not carried (mapping §8.4, D-5).
 - **Links:** `TransactionUuid` stays a text field, as in Evelyn; no `RELATIONSHIP` field.
 - **Writes, in Evelyn's order** (D-6):
-  1. Transaction: find by `Uuid`; if found, update every field, sending absent values as explicit nulls (Evelyn's
+  1. Transaction: find by `TransactionUuid`; if found, update every field, sending absent values as explicit nulls (Evelyn's
      `save` overwrites, mapping claim 15a); else insert. If the insert fails and a second find now returns the row
      (two producers racing), log Evelyn's warning "transaction '<uuid>' already exist" and go on, as
      `J:service/TransactionService.java:75` “} catch (DataIntegrityViolationException ex) {” does.
@@ -280,14 +281,16 @@ As approved. The maintained list, with the differences found while porting (D-13
 | Claim | What the files show |
 |---|---|
 | "Their levels 0-3 were run on the owner's tenant on 2026-10-16" | CsvProcessor and Dependency level 3 are recorded, only in uncommitted edits: `SIM:CsvProcessor Simulation/HOW_TO_RUN.md:14` “Level 3 was run on a tenant on 2026-10-16”. The files still say Datastore and Configuration were not run (`SIM:Datastore Simulation/HOW_TO_RUN.md:14` “haven't been run on a tenant yet.”, `SIM:Configuration Simulation/HOW_TO_RUN.md:14` “Levels 3 and 4 haven't been run on a tenant yet.”). Owner's tenant run, 2026-10-16: Datastore level 3 passed; Configuration level 3 was blocked (next rows) |
-| Vendored wheel proved on a tenant | yes, for a wheel without dependencies (DEC-2) |
+| Vendored wheel proved on a tenant | yes, for a wheel without dependencies (DEC-2); and with dependencies, `evmig-nss` 0.1.2 (owner's tenant run, 2026-10-19) |
 | Debug-run buckets in `Debug_<FlowName>` | recorded (DEC-7) |
 | `flow debug` rewrites the `.uipx` `SolutionId` | recorded: `SIM:CsvProcessor Simulation/HOW_TO_RUN.md:213` “your Studio Web `SolutionId` into `StudentSections.uipx`” |
 | A Credential asset with no value blocks every `flow debug` | owner's tenant run, 2026-10-16: every `flow debug` of the Configuration Simulation failed at provisioning with "Username is mandatory for asset type Credential" / "Password is mandatory for asset type Credential". No file records it (Q11). This port declares no Credential asset (DEC-8) |
 | `--output-filter` needs an explicit `--limit` | recorded in the CLI's own notes: `SIM:Dependency Simulation/DependencySim/AGENTS.md:483` “explicit `--limit` is required” |
-| Data Fabric refuses a dangling RELATIONSHIP ("Relationship violation") and a duplicate unique value ("Value uniqueness violation … 2627") | owner's tenant run, 2026-10-16: "Insert data failed. Relationship violation." and "Insert data failed. Value uniqueness violation. ... Error Number: 2627". No file records them (Q11). The second is the error DEC-6's insert race meets on `Uuid` |
+| Data Fabric refuses a dangling RELATIONSHIP ("Relationship violation") and a duplicate unique value ("Value uniqueness violation … 2627") | owner's tenant run, 2026-10-16: "Insert data failed. Relationship violation." and "Insert data failed. Value uniqueness violation. ... Error Number: 2627". No file records them (Q11). The second is the error DEC-6's insert race meets on `TransactionUuid` |
 | Debug-run jobs reach Data Fabric as the user | owner's tenant run, 2026-10-16: debug-run jobs wrote to and read from Data Fabric with no role added, and a batch insert returned each new row's Id. Your runbook still shows the question open: `SIM:Datastore Simulation/HOW_TO_RUN.md:414` “Do a debug run's jobs reach Data Fabric as you, with no role to add?” (Q11) |
 | A Flow node sends `null` for an unset list input | recorded (DEC-3) |
+| Where a debug run's function jobs run | owner's tenant run, 2026-10-19: in your personal workspace (`FolderKey` = the workspace), not in `Debug_<Flow>`. `jobs list` shows their `ProcessName` as ""; `jobs get` shows `ProcessType` "Function", `ServerlessJobType` "PythonCodedFunction" and `ParentJobKey` = the debug output's `.Data.instanceId`. So `UIPATH_FOLDER_KEY`, and `DwVariation`, is the workspace's key (DEC-5) |
+| Data Fabric on a debug run's job (Stage A) | owner's tenant run, 2026-10-19: the three entities were created; the producer's job wrote 1 / 1 / 2 rows; the rerun overwrote the transaction in place (`update_record`) and added nothing; `DATETIME_WITH_TZ` took UTC text ending in `Z` and gave it back as `+00:00` (“2026-10-19T06:15:07+00:00” for “…07.000Z”; `StartTime` kept its milliseconds, “…06:15:54.886+00:00”); `records delete` took several ids in one call. It refused the field name `Uuid` first (D-5) |
 | Debug runs take 30-70 seconds | one figure recorded: `SIM:CsvProcessor Simulation/HOW_TO_RUN.md:141` “33 seconds on 2026-10-16” |
 
 ## Plan
@@ -316,7 +319,7 @@ and Q15 is per record while keeping DEC-5's shared `bp_run_id`.
 | Q1 | Build the per-record call with `fireAndForget: true`, though no run anywhere has used it, and treat your first tenant run as the test? | yes, with the fallbacks of DEC-4 |
 | Q2 | Where does `provider_id` come from? The CSV flow passes `"CSV"` (D-2), or something reads `configuration.INPUT_TYPE` as `input-task` does (a function per record, or the monitor's output) | the CSV flow passes `"CSV"` |
 | Q3 | `bp_start_time` = the time `csv-monitor-task` starts (its output gains one field)? | yes |
-| Q4 | `dw_variation` = the job's folder key, "" when absent? (Alternatives: always "", or the CSV flow's `$metadata.FolderKey`) | yes |
+| Q4 | `dw_variation` = the job's folder key, "" when absent? (Alternatives: always "", or the CSV flow's `$metadata.FolderKey`) | yes. In a debug run that key is your personal workspace's (owner's tenant run, 2026-10-19) |
 | Q5 | `dw_version` = `evmig-nss`'s version; `model_version` = Evelyn's `nss-classification-model-v5.3.0`, though no model runs yet? | yes |
 | Q6 | Rerun rules: transaction overwritten (as Evelyn), alert written once (as Evelyn), hits completed without duplicates (Evelyn duplicates)? | yes |
 | Q7 | `NVARCHAR(MAX)` → `MULTILINE_TEXT` 10,000 (not the tenant-gated `MULTILINE_MAX`), and `autoQC`/`ticker` → `BOOLEAN` (not `STRING(5)` holding "0"/"1")? | yes |
@@ -344,6 +347,8 @@ answered after the build.
 | `uipath` locked at 2.14.27 in all four locks (DEC-9) | each `uv.lock` |
 | Layout additions to DEC-1: `scripts/entities.py` (generates and checks the entity files from mapping §8, used instead of a `jq` check), `scripts/normalize_flow.sh` (blanks generated ids to diff two Flow builds), `data/README.md` | README "Layout" |
 | Order: `uip solution init` was run before Phase 2, because function projects are created inside the Solution folder; Phase 3 ran while Phase 1 was in progress | |
+| After the owner's first A1 (2026-10-19): each entity's own uuid field renamed from `Uuid` to `TransactionUuid`, `AlertUuid`, `HitUuid`, because Data Fabric refuses `Uuid`; `evmig-nss` 0.1.2 | D-5, DEC-6 "Keys", mapping §8 |
+| After Stage A passed (2026-10-19): HOW_TO_RUN finds function jobs in the workspace by their parent run, B4 waits on the transaction count, `DwVariation` is the workspace's key | DEC-5, Q4, the facts table above |
 | The Flows: no `jq` edit was needed. `rest_request` stays on the producer node with the CLI's default; the compiled job arguments leave it out, and the producer accepts "" anyway. The call node compiles to `Orchestrator.StartFlowProcessAsync` (seen in `uip maestro flow pack` output, not only in the CLI source) | `scripts/build_flows.sh` |
 
 **Q17 (new).** The "NSS-main-BP" call node's error port is not armed, as approved. If a child run fails to start, the

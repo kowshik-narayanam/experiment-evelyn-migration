@@ -3,6 +3,7 @@ import json
 
 import pytest
 
+from evmig_nss import testing
 from evmig_nss.testing import MISSING_BLOB_BODY, FakeBuckets, FakeEntities, local_sdk
 
 TX = "EvMigTransaction-entity"
@@ -56,19 +57,37 @@ def test_fake_buckets_download_of_a_missing_key_writes_an_error_body_and_does_no
 def test_fake_entities_gives_every_row_an_id_and_refuses_a_duplicate_uuid_and_an_unknown_field_and_an_unknown_entity():
     entities = FakeEntities()
     key = str(entities.retrieve_by_name("EvMigTransaction").id)
-    record = entities.insert_record(key, {"Uuid": "t1"})
+    record = entities.insert_record(key, {"TransactionUuid": "t1"})
     assert record.id and entities.rows[TX][0]["EndTime"] is None  # every field exists, empty
     with pytest.raises(RuntimeError, match="Value uniqueness violation"):
-        entities.insert_record(key, {"Uuid": "t1"})
+        entities.insert_record(key, {"TransactionUuid": "t1"})
     with pytest.raises(RuntimeError, match="Field not found"):
-        entities.insert_record(key, {"Uuid": "t2", "NoSuchField": 1})
+        entities.insert_record(key, {"TransactionUuid": "t2", "NoSuchField": 1})
     with pytest.raises(ValueError, match="does not exist"):
         entities.retrieve_by_name("EvMigNope")
 
 
+@pytest.mark.parametrize(("entity", "unique"), [("EvMigAlertAnalytics", "AlertUuid"), ("EvMigHitAnalytics", "HitUuid")])
+def test_fake_entities_keep_each_entitys_own_uuid_field_unique(entity, unique):
+    entities = FakeEntities()
+    key = f"{entity}-entity"
+    entities.insert_record(key, {unique: "u1", "TransactionUuid": "t1"})
+    entities.insert_record(key, {unique: "u2", "TransactionUuid": "t1"})  # the link field may repeat
+    with pytest.raises(RuntimeError, match="Value uniqueness violation"):
+        entities.insert_record(key, {unique: "u1", "TransactionUuid": "t2"})
+
+
+@pytest.mark.parametrize("name", ["Uuid", "UUID", "uuid"])
+def test_fake_entities_refuse_a_field_named_uuid_as_the_tenant_does(name, monkeypatch):
+    # owner's tenant run, 2026-10-19: `uip df entities create` with a field "Uuid" was refused by the server
+    monkeypatch.setitem(testing.ENTITY_FIELDS, "EvMigTransaction", {name, "Status"})
+    with pytest.raises(ValueError, match=f"^Field name for '{name}' is a reserved SQL word and cannot be used as an entity or field name.$"):
+        FakeEntities()
+
+
 def test_fake_entities_update_stores_an_explicit_null():
     entities = FakeEntities()
-    record = entities.insert_record(TX, {"Uuid": "t1", "ErrorMessage": "x"})
+    record = entities.insert_record(TX, {"TransactionUuid": "t1", "ErrorMessage": "x"})
     entities.update_record(TX, record.id, {"ErrorMessage": None})
     assert entities.rows[TX][0]["ErrorMessage"] is None
 
@@ -76,19 +95,19 @@ def test_fake_entities_update_stores_an_explicit_null():
 def test_fake_entities_persist_to_a_json_file_after_every_write_and_a_second_process_sees_the_rows(tmp_path):
     file = tmp_path / "df" / "rows.json"
     first = FakeEntities(path=file)
-    first.insert_record(TX, {"Uuid": "t1", "ExtRecordId": "a.csv"})
+    first.insert_record(TX, {"TransactionUuid": "t1", "ExtRecordId": "a.csv"})
     assert json.loads(file.read_text(encoding="utf-8"))[TX][0]["ExtRecordId"] == "a.csv"
 
     second = FakeEntities(path=file)  # the next function's process
-    assert second.rows[TX][0]["Uuid"] == "t1"
-    record = second.insert_record(TX, {"Uuid": "t2"})
+    assert second.rows[TX][0]["TransactionUuid"] == "t1"
+    record = second.insert_record(TX, {"TransactionUuid": "t2"})
     assert record.id != second.rows[TX][0]["Id"]
-    assert [r["Uuid"] for r in FakeEntities(path=file).rows[TX]] == ["t1", "t2"]
+    assert [r["TransactionUuid"] for r in FakeEntities(path=file).rows[TX]] == ["t1", "t2"]
 
 
 def test_fake_entities_without_a_file_stay_in_memory():
     entities = FakeEntities()
-    entities.insert_record(TX, {"Uuid": "t1"})
+    entities.insert_record(TX, {"TransactionUuid": "t1"})
     assert FakeEntities().rows[TX] == []
 
 

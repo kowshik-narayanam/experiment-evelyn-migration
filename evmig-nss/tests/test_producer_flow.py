@@ -38,9 +38,9 @@ def test_a_screened_alert_with_two_hits_goes_through_the_wire_to_three_data_fabr
     transaction = transactions.start_new_transaction(screened_in.clientId, screened_in.uuid, "alice.csv")
     analytics.init_full_analytics(transaction, screened_in, wles_in)
 
-    assert transaction.Uuid == screened.uuid  # the transaction id is screened_data.uuid
+    assert transaction.TransactionUuid == screened.uuid  # the transaction id is screened_data.uuid
     (tx_row,) = entities.rows["EvMigTransaction-entity"]
-    assert (tx_row["Uuid"], tx_row["ClientId"], tx_row["ExtRecordId"], tx_row["StartBpUuid"]) == (screened.uuid, "5", "alice.csv", "run-1")
+    assert (tx_row["TransactionUuid"], tx_row["ClientId"], tx_row["ExtRecordId"], tx_row["StartBpUuid"]) == (screened.uuid, "5", "alice.csv", "run-1")
     (alert_row_out,) = entities.rows["EvMigAlertAnalytics-entity"]
     assert (alert_row_out["AlertId"], alert_row_out["AlertEntityType"], alert_row_out["TransactionUuid"]) == ("A-1", "INDIVIDUAL", screened.uuid)
     hit_rows_out = entities.rows["EvMigHitAnalytics-entity"]

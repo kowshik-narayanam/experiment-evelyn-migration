@@ -1,6 +1,6 @@
 [project]
 name = "evmig-nss"
-version = "0.1.1"
+version = "0.1.2"
 description = "Evelyn (Names Sanctions Screening) logic shared by the three EvMig functions, shipped to them as a wheel"
 requires-python = ">=3.11"
 dependencies = [

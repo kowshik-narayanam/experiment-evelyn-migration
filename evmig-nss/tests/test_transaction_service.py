@@ -38,8 +38,8 @@ def test_should_start_transaction_with_uuid():  # ports TransactionServiceTest.j
     assert row["Status"] == "NEW"
     assert row["DwVersion"] == version("evmig-nss")  # Java mocks "3.2.0"; here the library's own version (DEC-5)
     assert row["ModelVersion"] == "nss-classification-model-v5.3.0"
-    assert (row["Uuid"], row["ClientId"], row["ExtRecordId"]) == (uuid, "1", "recordId")
-    assert returned.Uuid == uuid
+    assert (row["TransactionUuid"], row["ClientId"], row["ExtRecordId"]) == (uuid, "1", "recordId")
+    assert returned.TransactionUuid == uuid
 
 
 def _assert_variation_is_empty_text_without_a_folder_key(monkeypatch):
@@ -109,14 +109,14 @@ def test_when_another_producer_wins_the_insert_the_loser_logs_and_returns_its_ow
 
     def other_producer_wins(key, row):
         entities.before_insert = None
-        entities.rows[key].append({"Id": "winner", **Transaction(Uuid="u1", ExtRecordId="winner.csv", Status="NEW").to_record()})
+        entities.rows[key].append({"Id": "winner", **Transaction(TransactionUuid="u1", ExtRecordId="winner.csv", Status="NEW").to_record()})
 
     entities.before_insert = other_producer_wins
     with caplog.at_level(logging.WARNING):
         returned = service(entities).start_new_transaction("1", "u1", "loser.csv")
 
     assert caplog.messages == ["transaction 'u1' already exist"]  # J:service/TransactionService.java:76
-    assert returned.Uuid == "u1" and returned.ExtRecordId == "loser.csv"
+    assert returned.TransactionUuid == "u1" and returned.ExtRecordId == "loser.csv"
     assert [row["ExtRecordId"] for row in entities.rows[TX]] == ["winner.csv"]  # the stored row is the winner's
 
 

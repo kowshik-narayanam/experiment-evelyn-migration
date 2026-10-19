@@ -102,19 +102,19 @@ def test_a_duplicate_uuid_in_a_batch_is_a_refused_row_too():
 def test_save_inserts_a_new_transaction_after_one_find():
     entities = FakeEntities()
     transactions = TransactionRepository(entities)
-    transactions.save(Transaction(Uuid="t1", Status=TransactionStatus.NEW, ClientId="9"))
+    transactions.save(Transaction(TransactionUuid="t1", Status=TransactionStatus.NEW, ClientId="9"))
     assert entities.calls == ["retrieve_by_name", "retrieve_records", "insert_record"]
     (row,) = entities.rows[TX]
-    assert row["Uuid"] == "t1" and row["Status"] == "NEW" and row["ClientId"] == "9"
+    assert row["TransactionUuid"] == "t1" and row["Status"] == "NEW" and row["ClientId"] == "9"
 
 
 def test_save_of_a_known_uuid_updates_every_field_and_sends_absent_values_as_explicit_nulls():
     entities = FakeEntities()
     transactions = TransactionRepository(entities)
-    transactions.save(Transaction(Uuid="t1", Status=TransactionStatus.COMPLETED, ErrorMessage="old error", ErrorStep="csv-task", ExtRecordId="old.csv"))
+    transactions.save(Transaction(TransactionUuid="t1", Status=TransactionStatus.COMPLETED, ErrorMessage="old error", ErrorStep="csv-task", ExtRecordId="old.csv"))
     (before,) = entities.rows[TX]
 
-    transactions.save(Transaction(Uuid="t1", Status=TransactionStatus.NEW, ExtRecordId="new.csv"))
+    transactions.save(Transaction(TransactionUuid="t1", Status=TransactionStatus.NEW, ExtRecordId="new.csv"))
 
     (after,) = entities.rows[TX]  # still one row, same Id
     assert after["Id"] == before["Id"]
@@ -129,11 +129,11 @@ def test_an_insert_that_loses_a_race_is_a_data_integrity_violation_and_leaves_th
 
     def other_producer_wins(key, row):  # runs after our find found nothing and before our insert
         entities.before_insert = None
-        entities.rows[key].append({"Id": "winner", **Transaction(Uuid="t1", ExtRecordId="winner.csv").to_record()})
+        entities.rows[key].append({"Id": "winner", **Transaction(TransactionUuid="t1", ExtRecordId="winner.csv").to_record()})
 
     entities.before_insert = other_producer_wins
     with pytest.raises(DataIntegrityViolationError, match="transaction 't1' already exist"):
-        transactions.save(Transaction(Uuid="t1", ExtRecordId="loser.csv"))
+        transactions.save(Transaction(TransactionUuid="t1", ExtRecordId="loser.csv"))
     assert [row["ExtRecordId"] for row in entities.rows[TX]] == ["winner.csv"]
 
 
@@ -141,7 +141,7 @@ def test_an_insert_that_fails_for_another_reason_raises_as_it_is():
     entities = FakeEntities()
     entities.reject = lambda key, row: "Data Fabric is down"
     with pytest.raises(RuntimeError, match="Data Fabric is down"):
-        TransactionRepository(entities).save(Transaction(Uuid="t1"))
+        TransactionRepository(entities).save(Transaction(TransactionUuid="t1"))
     assert entities.rows[TX] == []
 
 
@@ -149,6 +149,6 @@ def test_rows_use_the_data_fabric_field_names_and_the_fake_refuses_an_unknown_on
     entities = FakeEntities()
     alerts = AlertAnalyticsRepository(entities)
     with pytest.raises(RuntimeError, match="Field not found: \\['alert_id'\\]"):
-        alerts.insert({"Uuid": "a1", "alert_id": "snake case is not a Data Fabric name"})
+        alerts.insert({"AlertUuid": "a1", "alert_id": "snake case is not a Data Fabric name"})
     alerts.insert(AlertAnalytics(TransactionUuid="t1", AlertId="A1").to_record())
     assert entities.rows["EvMigAlertAnalytics-entity"][0]["AlertId"] == "A1"

@@ -34,18 +34,23 @@ Private: nothing here is pushed. How to run it is in [HOW_TO_RUN.md](HOW_TO_RUN.
 
 | | Result (2026-10-19) |
 |---|---|
-| Library `evmig-nss` | `uv run pytest -q`: 457 passed |
+| Library `evmig-nss` | `uv run pytest -q`: 465 passed |
 | `EvMigCsvMonitorTask` | 33 passed (all 12 Java tests ported: 1 unit test and 11 ITs) |
 | `EvMigCsvTask` | 148 passed (all 18 methods of `CsvDataServiceTest` and all 9 of `CsvTaskProcessorIT`; its CSV reader was compared with commons-csv 1.14.1 on 56 inputs: 55 pinned in `tests/csv_parser_cases.py`, plus one 200,000-character field) |
 | `EvMigCsvSchemaProducer` | 35 passed (`CsvSchemaProducerProcessorTest` and `CsvSchemaProducerProcessorIT`) |
 | Flows | Both `Valid` with no warnings; `uip solution pack --dry-run` `Valid`; `scripts/build_flows.sh` rebuilt in an empty copy gives the same `.flow` files apart from generated ids and what the designer adds (`scripts/normalize_flow.sh`) |
 | Local run | The three functions in order on `data/`: 3 transactions, 3 alert rows and 5 hit rows (HOW_TO_RUN level 2) |
-| Tenant | **Not run.** Nothing here touched a tenant. The staged tenant steps are in HOW_TO_RUN level 4, for the owner |
+| Tenant | **Stage A passed** (owner's tenant run, 2026-10-19: the main flow with one record, A0-A4 and the rerun). Stage B, the CSV flow, has not run. The steps are in HOW_TO_RUN level 4 |
 
-Still **Inference** until the first tenant run: that `fireAndForget: true` starts the child Flow (never run anywhere
-before, Q1); that `$metadata.InstanceId` holds the CSV flow's id; that Data Fabric accepts the UTC text
-`2026-10-19T07:15:00.123Z` for `DATETIME_WITH_TZ` fields; that `ListFiles` with a prefix without a trailing `/` returns
-nested keys; what happens past Community's 3 concurrent jobs. HOW_TO_RUN lists the checks.
+Still **Inference** until Stage B: that `fireAndForget: true` starts the child Flow (never run anywhere before, Q1);
+that `$metadata.InstanceId` holds the CSV flow's id; that `ListFiles` with a prefix without a trailing `/` returns
+nested keys; that a function job, which runs in your workspace, reaches the bucket in `Debug_EvMigCsvFileIngestionFlow`
+(HOW_TO_RUN B1); what happens past Community's 3 concurrent jobs. HOW_TO_RUN lists the checks.
+
+Settled by Stage A (owner's tenant run, 2026-10-19): `DATETIME_WITH_TZ` takes UTC text ending in `Z` (it comes back
+as `+00:00`); `UIPATH_FOLDER_KEY` is set in a job, and in a debug run it is your personal workspace, where the
+function jobs run; the vendored wheel installs with its dependencies from `uv.lock`; Data Fabric works from a debug
+run's job; `update_record` overwrites in place; `records delete` takes several ids in one call.
 
 ## Layout
 

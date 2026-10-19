@@ -3,7 +3,7 @@
   "description": "Port of Evelyn table ds_uc_B_AML_PEP_alert_analytics_v3_0, final state of its Liquibase changesets (docs/mapping.md §8.2).",
   "fields": [
     {
-      "name": "Uuid",
+      "name": "AlertUuid",
       "type": "STRING",
       "lengthLimit": 36,
       "isRequired": true,

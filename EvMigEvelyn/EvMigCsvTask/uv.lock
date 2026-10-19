@@ -573,14 +573,14 @@ wheels = [
 
 [[package]]
 name = "evmig-nss"
-version = "0.1.1"
-source = { path = "wheels/evmig_nss-0.1.1-py3-none-any.whl" }
+version = "0.1.2"
+source = { path = "wheels/evmig_nss-0.1.2-py3-none-any.whl" }
 dependencies = [
     { name = "pydantic" },
     { name = "uipath" },
 ]
 wheels = [
-    { filename = "evmig_nss-0.1.1-py3-none-any.whl", hash = "sha256:b8f8f7646091b3b33abce54615cf3c57dc328de91c5692fa298eb83201dca780" },
+    { filename = "evmig_nss-0.1.2-py3-none-any.whl", hash = "sha256:1997a6f0ff1633e7c0cf70a30e4d474a5a6d8b9efaa7e3c16c986beb53f74133" },
 ]
 
 [package.metadata]
@@ -606,7 +606,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "evmig-nss", path = "wheels/evmig_nss-0.1.1-py3-none-any.whl" },
+    { name = "evmig-nss", path = "wheels/evmig_nss-0.1.2-py3-none-any.whl" },
     { name = "pydantic", specifier = ">=2.10,<3" },
     { name = "uipath", specifier = ">=2.14.0,<2.15.0" },
 ]

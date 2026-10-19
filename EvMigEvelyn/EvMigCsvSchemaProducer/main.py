@@ -86,7 +86,7 @@ def main(input: ProducerIn) -> ProducerOut:
 
         # 4. J:...Processor.java:54-62
         return ProducerOut(
-            transaction_id=transaction.Uuid,
+            transaction_id=transaction.TransactionUuid,
             screened_data=screened_data.model_dump(mode="json"),
             wle_list=[wle.model_dump(mode="json") for wle in wle_list],
             request_id=request_id,

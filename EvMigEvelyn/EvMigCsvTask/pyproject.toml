@@ -16,7 +16,7 @@ dev = [
 ]
 
 [tool.uv.sources]
-evmig-nss = { path = "wheels/evmig_nss-0.1.1-py3-none-any.whl" }
+evmig-nss = { path = "wheels/evmig_nss-0.1.2-py3-none-any.whl" }
 
 [tool.pytest.ini_options]
 # main.py and its modules sit in this folder, the test helpers in tests/.

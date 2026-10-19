@@ -15,7 +15,7 @@ HIT_ENTITY_NAME = "EvMigHitAnalytics"
 
 
 class AlertAnalytics(DataFabricRow):
-    Uuid: str = Field(default_factory=lambda: str(uuid.uuid4()))  # Hibernate generates it in Java
+    AlertUuid: str = Field(default_factory=lambda: str(uuid.uuid4()))  # uuid, Hibernate generates it in Java; not `Uuid` (D-5)
     TransactionUuid: str | None = None
     AlertId: str | None = None
     AlertCategory: str | None = None
@@ -38,7 +38,7 @@ class AlertAnalytics(DataFabricRow):
 
 
 class HitAnalytics(DataFabricRow):
-    Uuid: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    HitUuid: str = Field(default_factory=lambda: str(uuid.uuid4()))  # uuid; not `Uuid` (D-5)
     TransactionUuid: str | None = None
     WleId: str | None = None
     WleCategory: str | None = None

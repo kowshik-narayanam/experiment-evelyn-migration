@@ -57,7 +57,7 @@ def test_rows_written_in_one_process_are_read_in_the_next_through_the_named_file
     monkeypatch.setenv(sdk.LOCAL_BUCKET_DIR_ENV, str(tmp_path))
     monkeypatch.setenv(sdk.LOCAL_DATAFABRIC_FILE_ENV, str(tmp_path / "out" / "datafabric.json"))
 
-    TransactionRepository(sdk.get_sdk().entities).save(Transaction(Uuid="t1", ExtRecordId="a.csv"))
+    TransactionRepository(sdk.get_sdk().entities).save(Transaction(TransactionUuid="t1", ExtRecordId="a.csv"))
 
     sdk.set_sdk(None)  # "a new process": the SDK is created again from the environment
     found = TransactionRepository(sdk.get_sdk().entities).find_by_uuid("t1")

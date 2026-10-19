@@ -10,8 +10,12 @@ otherwise. Tools: `uv` 0.13.0, Python 3.11 (uv fetches it), `uip` 1.203.0, `jq`,
 The repo is local only (no remote). To work in a fresh copy, without the virtual environments and local-run files:
 
 ```bash
-rsync -a --exclude .venv --exclude .local-run --exclude .pytest_cache --exclude __pycache__ ~/UiPathRepos/experiment-evelyn-migration/ /tmp/evmig-copy/
+rsync -a --delete --exclude .venv --exclude .local-run --exclude .pytest_cache --exclude __pycache__ ~/UiPathRepos/experiment-evelyn-migration/ /tmp/evmig-copy/
 ```
+
+`--delete` matters when the copy already exists: it removes files the repo no longer has, such as an older wheel in a
+function's `wheels/` beside the new one (owner's tenant run, 2026-10-19: `evmig_nss-0.1.1` stayed beside `0.1.2`).
+The excluded folders are left alone.
 
 ```bash
 cd /tmp/evmig-copy
@@ -28,7 +32,7 @@ in each function's `wheels/`).
 (cd evmig-nss && uv run pytest -q)
 ```
 
-**Check:** `457 passed`.
+**Check:** `465 passed`.
 
 ```bash
 (cd EvMigEvelyn/EvMigCsvMonitorTask && uv run pytest -q)
@@ -185,7 +189,8 @@ enough: `uip` also looks for a login in every `.uipath/` folder above the workin
 
 ## Level 4: on the tenant (for the owner)
 
-Not run by anyone yet. In two stages, so that a failure points at one cause:
+Stage A passed on 2026-10-19 (owner's tenant run: A0-A4 and the optional rerun). Stage B has not run yet. In two
+stages, so that a failure points at one cause:
 - **Stage A**, the main flow alone with one record: Data Fabric from a job, the wheel with real dependencies,
   `UIPATH_FOLDER_KEY`, the object-typed `screened_data` input.
 - **Stage B**, the CSV flow with the three mock records: the bucket and its listing, the two loops, the Decision,
@@ -194,7 +199,7 @@ Not run by anyone yet. In two stages, so that a failure points at one cause:
 Section C removes from the tenant what both stages made.
 
 Data Fabric budget: about 9 calls per record, about 80 for the first pass of both stages including checks and
-clean-up; the Community plan allows 1,000 a day. Whether your tenant is Community is not visible read-only.
+clean-up, plus up to 30 for B4's wait; the Community plan allows 1,000 a day. Whether your tenant is Community is not visible read-only.
 
 Before you start: `flow debug` uploads the Solution to Studio Web and writes your Studio Web `SolutionId` into
 `EvMigEvelyn/EvMigEvelyn.uipx`, and `resources refresh` adds fields to files under `EvMigEvelyn/resources/` (as does a
@@ -236,7 +241,8 @@ uip df entities create EvMigHitAnalytics --file EvMigEvelyn/entities/EvMigHitAna
 
 **Check:** each prints `"Code": "EntityCreated"`, and the list command above now prints the three names. These are the
 first `DATETIME_WITH_TZ`, `BOOLEAN` and `MULTILINE_TEXT` fields created by command on your tenant; a refusal names
-the field.
+the field ("When a run fails" has the steps). The server also refuses some names the CLI lets through: it
+refused `Uuid` on 2026-10-19 (D-5), and it reports one name per attempt.
 
 ```bash
 TXN_ENTITY=$(uip df entities list --native-only --output plain --output-filter "[?Name=='EvMigTransaction'].Id | [0]")
@@ -290,15 +296,25 @@ prints nothing. The producer's output (`jq '.Data.variables.elements[] | select(
 /tmp/evmig-debug-a.json`) should show `transaction_id` equal to the input's uuid, `wle_count` 2, `request_id`
 `alice.csv`, `is_internal_request` true.
 
-**Check the wheel was installed** from the function's job log:
+**Check the wheel was installed** from the function's job log. A debug run's function jobs run in your personal
+workspace, not in `Debug_<Flow>`, and `jobs list` shows their `ProcessName` as `""`. `jobs get` shows `ProcessType`
+`Function`, `ServerlessJobType` `PythonCodedFunction`, and `ParentJobKey` equal to the debug output's
+`.Data.instanceId` (owner's tenant run, 2026-10-19). So find the job by its parent:
 
 ```bash
 WORKSPACE=$(uip or folders list --limit 100 --output plain --output-filter "[?Type=='Personal'].Path | [0]")
 ```
 
 ```bash
-uip or jobs list --folder-path "$WORKSPACE/Debug_EvMigNamesScreeningFlow" --process-name EvMigCsvSchemaProducer --limit 10 --output json --output-filter "[].{key: Key, state: State, start: StartTime}"
+INSTANCE=$(jq -r .Data.instanceId /tmp/evmig-debug-a.json)
 ```
+
+```bash
+for K in $(uip or jobs list --folder-path "$WORKSPACE" --limit 20 --output json | jq -r '.Data[].Key'); do [ "$(uip or jobs get $K --output json | jq -r '.Data.ParentJobKey')" = "$INSTANCE" ] && echo "$K"; done
+```
+
+**Check:** it prints one job key (the producer's). It looks at your 20 newest workspace jobs, so run it soon after
+the debug run.
 
 `jobs logs` returns the newest lines first and stops at `--limit`, and the install lines are among the oldest. So ask
 for 1,000 and check that fewer came back:
@@ -317,9 +333,8 @@ jq '.Data | length' /tmp/evmig-a2-log.json
 jq -r '.Data[].Message' /tmp/evmig-a2-log.json | grep -e 'evmig-nss==' -e 'Hash mismatch'
 ```
 
-**Check:** a line `+ evmig-nss==0.1.1 (from file:///…/wheels/evmig_nss-0.1.1-py3-none-any.whl)`, and no
-`Hash mismatch`. (The debug folder name `Debug_EvMigNamesScreeningFlow` follows the simulations' pattern; if
-`jobs list` finds nothing, list the folders.)
+**Check:** a line `+ evmig-nss==0.1.2 (from file:///tmp/home/.job-data/<id>/wheels/evmig_nss-0.1.2-py3-none-any.whl)`,
+and no `Hash mismatch`. (Owner's tenant run, 2026-10-19: the log was 112 lines and had that line.)
 
 ### A3. Check the rows
 
@@ -328,13 +343,16 @@ UUID=$(jq -r '.screened_data.uuid' /tmp/evmig-stage-a.json)
 ```
 
 ```bash
-uip df records query "$TXN_ENTITY" --limit 100 --body "{\"filterGroup\": {\"logicalOperator\": 0, \"queryFilters\": [{\"fieldName\": \"Uuid\", \"operator\": \"=\", \"value\": \"$UUID\"}]}}" --output json --output-filter "Items[].{status: Status, startBpUuid: StartBpUuid, bpStartTime: BpStartTime, dwVariation: DwVariation, dwVersion: DwVersion, modelVersion: ModelVersion, ext: ExtRecordId, clientId: ClientId}"
+uip df records query "$TXN_ENTITY" --limit 100 --body "{\"filterGroup\": {\"logicalOperator\": 0, \"queryFilters\": [{\"fieldName\": \"TransactionUuid\", \"operator\": \"=\", \"value\": \"$UUID\"}]}}" --output json --output-filter "Items[].{status: Status, startBpUuid: StartBpUuid, bpStartTime: BpStartTime, dwVariation: DwVariation, dwVersion: DwVersion, modelVersion: ModelVersion, ext: ExtRecordId, clientId: ClientId}"
 ```
 
-**Check:** one row: `NEW`, `StartBpUuid` `11111111-2222-3333-4444-555555555555`, `BpStartTime` as in the input,
-`DwVersion` `0.1.1`, `ModelVersion` `nss-classification-model-v5.3.0`, `ExtRecordId` `alice.csv`, `ClientId` `5`.
-**`DwVariation` should be a GUID** (the debug folder's key, from `UIPATH_FOLDER_KEY`, Q4); empty means the variable
-is not set inside a job.
+**Check:** one row: `NEW`, `StartBpUuid` `11111111-2222-3333-4444-555555555555`, `BpStartTime` the same instant as
+the input, `DwVersion` `0.1.2`, `ModelVersion` `nss-classification-model-v5.3.0`, `ExtRecordId` `alice.csv`, `ClientId`
+`5`. Data Fabric gave the times back with `+00:00`: the input `…T06:15:07.000Z` came back as
+`2026-10-19T06:15:07+00:00` (the same instant, without the zero milliseconds), while `StartTime` kept its milliseconds
+(`…T06:15:54.886+00:00`) (owner's tenant run, 2026-10-19). **`DwVariation` is a GUID**: your personal workspace's folder key, from `UIPATH_FOLDER_KEY`, because the
+function job runs in the workspace, not in `Debug_<Flow>` (owner's tenant run, 2026-10-19; Q4). Empty would mean the
+variable is not set inside a job.
 
 ```bash
 uip df records query "$ALERT_ENTITY" --limit 100 --body "{\"filterGroup\": {\"logicalOperator\": 0, \"queryFilters\": [{\"fieldName\": \"TransactionUuid\", \"operator\": \"=\", \"value\": \"$UUID\"}]}}" --output json --output-filter "Items[].{alertId: AlertId, category: AlertCategory, type: AlertEntityType, gold: GoldDecision, autoQC: AutoQC, ticker: Ticker, clientId: ClientId}"
@@ -363,8 +381,8 @@ for E in "$TXN_ENTITY" "$ALERT_ENTITY" "$HIT_ENTITY"; do uip df records query "$
 `.Data[].Id`.)
 
 **Check:** `uip df records query "$TXN_ENTITY" --limit 100 --output plain --output-filter "length(Items)"` (and the
-same for the other two) prints 0. (Deleting many ids in one call is **Inference** from `records delete --help`: `<id>
-<key...>`; the Datastore Simulation deleted one.)
+same for the other two) prints 0. (`records delete` takes several ids in one call: it deleted 1, 1 and 2 rows here,
+owner's tenant run, 2026-10-19.)
 
 ### B0. Set the variables again
 
@@ -420,7 +438,11 @@ configuration file is not there yet. The step's text sits inside the node's erro
 jq -r '.Data.variables.elements[] | select(.elementId == "csvMonitorTask1") | .outputs.Error.detail' /tmp/evmig-debug-b1.json | grep -o 'Exception was thrown by Evelyn NSS step csv-monitor-task: Please provide correct path to file: config/configuration_payload.json'
 ```
 
-**Check:** it prints that text once. If it prints nothing, read the whole detail (the command without `| grep …`).
+**Check:** it prints that text once. If it prints nothing, read the whole detail (the command without `| grep …`). If the
+detail says "Bucket with name 'EvMigFiles' not found" instead, the monitor's job (which runs in your workspace, A2)
+did not reach the bucket in `Debug_EvMigCsvFileIngestionFlow`: the SDK sends a bucket call to another folder only
+when the run gives it the Solution's resource override for that bucket (**Inference** from the SDK's
+`resource_override`, `uipath/platform/common/_bindings.py:218`; not seen yet).
 
 ### B2. Upload the mock files
 
@@ -484,14 +506,16 @@ prints nothing.
 
 ### B4. Check the three main-flow runs and the rows
 
-Wait for the three producer jobs:
+Wait for the three child runs to write their transactions. (The producer jobs run in your workspace and `jobs list`
+shows no process name for them, A2, so count the rows instead; A4 or B5 left the entities empty.) Each poll is one Data
+Fabric call:
 
 ```bash
-for i in $(seq 30); do N=$(uip or jobs list --folder-path "$DEBUG_FOLDER" --process-name EvMigCsvSchemaProducer --limit 50 --output plain --output-filter "length([?State=='Successful'])"); echo "$N"; [ "$N" = "3" ] && break; sleep 10; done
+for i in $(seq 30); do N=$(uip df records query "$TXN_ENTITY" --limit 100 --output plain --output-filter "length(Items)"); echo "$N"; [ "$N" = "3" ] && break; sleep 10; done
 ```
 
-**Check:** it reaches `3`. Fewer means a child was lost or failed: Community runs 3 jobs at once, and what happens past
-that is undocumented.
+**Check:** it reaches `3` within the 5 minutes. Fewer means a child was lost or failed: Community runs 3 jobs at once,
+and what happens past that is undocumented.
 
 ```bash
 for E in "$TXN_ENTITY" "$ALERT_ENTITY" "$HIT_ENTITY"; do uip df records query "$E" --limit 100 --output plain --output-filter "length(Items)"; done
@@ -525,7 +549,9 @@ DEBUG_FOLDER_KEY=$(uip or folders list --limit 100 --output plain --output-filte
 uip maestro flow instance list --folder-key "$DEBUG_FOLDER_KEY" --limit 20 --output json
 ```
 
-**Check:** one `EvMigCsvFileIngestionFlow` instance and three `EvMigNamesScreeningFlow` instances. (The field names of
+**Check:** one `EvMigCsvFileIngestionFlow` instance and three `EvMigNamesScreeningFlow` instances. If it lists none,
+the instances may sit in your workspace, as the function jobs do (**Inference**): run it again with `--folder-key` set
+to the workspace's key, which is A3's `DwVariation`. (The field names of
 this list are not recorded anywhere yet; read them off the output.)
 
 ### B5. Reset between runs
@@ -591,33 +617,37 @@ added. If you ran level 4 in `/tmp/evmig-copy`, delete that copy; the repo itsel
 | One run, node by node, with Incidents | `jq -r '.Data.studioWebUrl' /tmp/evmig-debug-b3.json`: the canvas in Debug mode |
 | The three child runs | Maestro → **Flow instances**: each child is its own instance |
 | The bucket and its files | Orchestrator → **My Workspace** → `Debug_EvMigCsvFileIngestionFlow` → **Storage Buckets** → `EvMigFiles` (buckets don't show while **Tenant** is selected) |
-| Function jobs and their logs | Orchestrator → **Automations** → **Jobs**, or `uip or jobs logs <job key>` |
+| Function jobs and their logs | Orchestrator → **My Workspace** → **Automations** → **Jobs** (a debug run's function jobs run in your workspace, not in `Debug_<Flow>`), or `uip or jobs logs <job key>` with the key found as in A2 |
 | The rows | Data Fabric → **Entities** → `EvMigTransaction`, `EvMigAlertAnalytics`, `EvMigHitAnalytics` |
 
 ### Things only the tenant run can confirm
 
 | Question | Where you see the answer |
 |---|---|
-| Does `fireAndForget: true` start one child run per record? (Q1; never run anywhere before) | B4: three producer jobs and three child instances |
+| Does `fireAndForget: true` start one child run per record? (Q1; never run anywhere before) | B4: three transactions and three child instances |
 | Does `$metadata.InstanceId` hold the CSV flow's id, and which one? | B4: `StartBpUuid` equals the B3 run's `instanceId` or its `runId` |
-| Does the vendored wheel install with its dependencies (`pydantic`, `uipath`)? | A2: the job log |
-| Is `UIPATH_FOLDER_KEY` set inside a job? | A3: `DwVariation` |
-| Does Data Fabric accept the UTC text `2026-10-19T07:15:00.123Z` in `DATETIME_WITH_TZ`, booleans in `BOOLEAN`, and the SDK's `insert_record` / `update_record`? | A3 and the optional rerun |
 | Does `ListFiles` with a prefix without a trailing `/` return nested keys? | B2's check, then B3 (the monitor lists 3 files) |
 | Do the object and array inputs survive the Flow-to-Flow call? | B4: rows with the right ids and hit counts |
 | Is a `csv-task` failure contained by its error port (the CSV flow goes on)? | Upload a broken file under `csv/data/` and debug: the run completes, the node shows the error (D-12) |
 | Is a call that fails to start contained by the "NSS-main-BP" error port? | Only seen if it happens: the run completes and `nssMainBp1` shows an error (D-18) |
 | What happens past 3 concurrent jobs? | B4 with more records (not in the mock data) |
 
+Answered by Stage A, so no longer in the table (owner's tenant run, 2026-10-19): the three entities were created with these field names;
+Data Fabric works from a debug run's job; the vendored wheel installs with its dependencies from `uv.lock`;
+`UIPATH_FOLDER_KEY` is set in a job (your workspace's key); `DATETIME_WITH_TZ` takes UTC text ending in `Z`;
+`BOOLEAN` takes the booleans; `update_record` overwrites the transaction in place (the rerun gave 1 / 1 / 2 rows);
+`records delete` takes several ids in one call.
+
 ### When a run fails
 
 | Symptom | Cause, and what to do |
 |---|---|
 | `Not logged in` | `uip login` |
-| A function node `Faulted` with "Exception was thrown by Evelyn NSS step …" | The text after the colon is Evelyn's message. `jq` the element's `.outputs.Error.detail`; the job log has the traceback (`uip or jobs logs <key> --level Error`) |
+| A1: "Field name for '<name>' is a reserved SQL word and cannot be used as an entity or field name." | The server refuses names the CLI lets through, one per attempt, and nothing is created. Rename the field in `docs/mapping.md` §8, add the name to `REFUSED_BY_TENANT` in `scripts/entities.py` and to `REFUSED_FIELD_NAMES` in `evmig-nss/src/evmig_nss/testing.py`, rename it in the row models, then `python3 -I scripts/entities.py --write`, bump the library and `scripts/vendor_wheel.sh` (as for `Uuid`, D-5) |
+| A function node `Faulted` with "Exception was thrown by Evelyn NSS step …" | The text after the colon is Evelyn's message. `jq` the element's `.outputs.Error.detail`; the job log has the traceback (`uip or jobs logs <key> --level Error`, the key found as in A2 with the `instanceId` of the run whose node failed) |
 | `Hash mismatch for evmig-nss` in a job log | The wheel in `wheels/` and `uv.lock` disagree: rerun `scripts/vendor_wheel.sh` (bump the library's version first) |
-| A Data Fabric 401 or 403 | The job's identity has no role. Your 2026-10-16 run needed none; if it happens, Data Fabric → Manage Access → Data Writer for the debug folder's robot |
-| "Value uniqueness violation … 2627" | A second insert of the same `Uuid`; the producer treats a lost race as "already exist", other cases are bugs |
+| A Data Fabric 401 or 403 | The job's identity has no role. Your runs of 2026-10-16 and 2026-10-19 needed none; if it happens, Data Fabric → Manage Access → Data Writer for the robot of your workspace, where the jobs run |
+| "Value uniqueness violation … 2627" | A second insert of the same `TransactionUuid` (or `AlertUuid`, `HitUuid`); the producer treats a lost race as "already exist", other cases are bugs |
 | No child runs in B4 | Look at `nssMainBp1`'s error in `/tmp/evmig-debug-b3.json` (its error port is armed, so a failed start does not stop the run, D-18). If there is none, `fireAndForget: true` did not start them (Q1). Fallback 1 (DEC-4): set `"fireAndForget": false` in `scripts/build_flows.sh`, rebuild the Flows (README → Rebuild), and debug again. Its risk: the CSV flow waits for each child, and a faulted child may never release it |
 | `StartBpUuid` empty or the producer says "bp_run_id is empty" | `$metadata.InstanceId` was empty: the fallback is a UUID made by `csv-monitor-task` (DEC-5, out-of-scope item 12) |
 | The parent stays `Running` after a node fault | Known behaviour of a waiting Flow call (`learning/KT/coded-functions.md`); with `fireAndForget: true` it should not happen. Stop the instance in Maestro |

@@ -14,6 +14,7 @@ import pytest
 from evmig_nss.core.analytics import ALERT_ENTITY_NAME, HIT_ENTITY_NAME, AlertAnalytics, HitAnalytics
 from evmig_nss.core.transaction import ENTITY_NAME as TRANSACTION_ENTITY_NAME
 from evmig_nss.core.transaction import Transaction
+from evmig_nss.testing import UNIQUE_FIELDS, refused_field_name_error
 
 ENTITY_DIR = Path(__file__).resolve().parents[2] / "EvMigEvelyn" / "entities"
 
@@ -40,3 +41,13 @@ def test_there_are_exactly_the_three_entity_files():
     assert sorted(path.name for path in ENTITY_DIR.glob("*.create.json")) == [
         f"{name}.create.json" for name in sorted([TRANSACTION_ENTITY_NAME, ALERT_ENTITY_NAME, HIT_ENTITY_NAME])
     ]
+
+
+@pytest.mark.parametrize("entity_name", [TRANSACTION_ENTITY_NAME, ALERT_ENTITY_NAME, HIT_ENTITY_NAME])
+def test_no_field_name_is_one_the_tenant_refuses_and_the_unique_field_is_the_fakes(entity_name):
+    # The tenant refused `Uuid` at `uip df entities create` (owner's tenant run, 2026-10-19), so each own uuid was renamed.
+    document = json.loads((ENTITY_DIR / f"{entity_name}.create.json").read_text(encoding="utf-8"))
+    assert [field["name"] for field in document["fields"] if refused_field_name_error(field["name"])] == []
+    unique = [field["name"] for field in document["fields"] if field.get("isUnique")]
+    assert unique == [UNIQUE_FIELDS[entity_name]]
+    assert next(field for field in document["fields"] if field["name"] == unique[0]).get("isRequired") is True

@@ -93,24 +93,24 @@ class TransactionRepository(EntityStore):
     entity_name = TRANSACTION_ENTITY_NAME
 
     def find_by_uuid(self, uuid: str) -> dict | None:
-        rows = self.find_by("Uuid", uuid)
+        rows = self.find_by("TransactionUuid", uuid)
         return rows[0] if rows else None
 
     def save(self, transaction: Transaction) -> Transaction:
-        """JPA merge by Uuid: overwrite every field of the row if it exists (nulls included), else insert.
+        """JPA merge by uuid (the field TransactionUuid): overwrite every field of the row if it exists (nulls included), else insert.
 
         Raises DataIntegrityViolationError when the insert fails and the row exists now (two producers racing on one uuid).
         """
-        existing = self.find_by_uuid(transaction.Uuid)
+        existing = self.find_by_uuid(transaction.TransactionUuid)
         if existing is not None:
             self.update(existing["Id"], transaction.to_record())
             return transaction
         try:
             self.insert(transaction.to_record())
         except Exception as e:
-            if self.find_by_uuid(transaction.Uuid) is None:
+            if self.find_by_uuid(transaction.TransactionUuid) is None:
                 raise  # not a race: a real failure
-            raise DataIntegrityViolationError(f"transaction '{transaction.Uuid}' already exist") from e
+            raise DataIntegrityViolationError(f"transaction '{transaction.TransactionUuid}' already exist") from e
         return transaction
 
 

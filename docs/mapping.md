@@ -226,6 +226,9 @@ The cited line is the column's `name:` line; its `type:` is on the next line. Fi
 Fabric field names allow letters and digits only: `SDK:entities/_entity_schema_service.py:48` “_NAME_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9]*$")”.
 Types follow DEC-6 (`NVARCHAR(n)` → `STRING(n)`, `NVARCHAR(MAX)` → `MULTILINE_TEXT` 10,000, `DATETIME2` →
 `DATETIME_WITH_TZ` in UTC). Data Fabric adds its own `Id`, `CreatedBy`, `CreateTime`, `UpdatedBy`, `UpdateTime`.
+Each table's own `uuid` column is named after its entity (`TransactionUuid`, `AlertUuid`, `HitUuid`), not `Uuid`:
+Data Fabric refuses `Uuid` as a reserved SQL word (owner's tenant run, 2026-10-19; D-5). The transaction's field has
+the same name as the analytics entities' link field `TransactionUuid`, which holds the same value.
 
 ### 8.1 `ds_uc_B_AML_PEP_transaction_v3_0` → `EvMigTransaction` (14 columns)
 
@@ -233,7 +236,7 @@ Table name: `M:030_transaction_table.yaml:7` “tableName: ds_uc_B_AML_PEP_trans
 
 | Column | Evidence | SQL type | Null | Field | Data Fabric type | Value written by `csv-schema-producer` |
 |---|---|---|---|---|---|---|
-| `uuid` | `M:030_transaction_table.yaml:10` “name: uuid” | NVARCHAR(36), unique, default NEWID() | no | `Uuid` | STRING(36), required, unique | `screened_data.uuid` |
+| `uuid` | `M:030_transaction_table.yaml:10` “name: uuid” | NVARCHAR(36), unique, default NEWID() | no | `TransactionUuid` | STRING(36), required, unique | `screened_data.uuid` |
 | `start_time` | `M:030_transaction_table.yaml:17` “name: start_time” | DATETIME2 | yes | `StartTime` | DATETIME_WITH_TZ | now (`J:service/TransactionService.java:67` “.setStartTime(new Date())”) |
 | `end_time` | `M:030_transaction_table.yaml:20` “name: end_time” | DATETIME2 | yes | `EndTime` | DATETIME_WITH_TZ | not set |
 | `status` | `M:030_transaction_table.yaml:23` “name: status” | NVARCHAR(36) | yes | `Status` | STRING(36) | `NEW` (`J:service/TransactionService.java:68` “TransactionStatus.NEW”) |
@@ -258,7 +261,7 @@ transaction, written only if none exists (claim 16). Java: `C:domain/analytics/A
 
 | Column | Evidence | SQL type | Field | Data Fabric type | Written at init (value) |
 |---|---|---|---|---|---|
-| `uuid` | `M:034_1_alert_analytics_table.yaml:10` “name: uuid” | NVARCHAR(36), unique, NOT NULL, default NEWID() (`M:034_1_alert_analytics_table.yaml:12` “defaultValueComputed: NEWID()”) | `Uuid` | STRING(36), required, unique | new random uuid (Hibernate generates it: `C:domain/analytics/AlertAnalytics.java:24` “@GeneratedValue(strategy = GenerationType.AUTO)”) |
+| `uuid` | `M:034_1_alert_analytics_table.yaml:10` “name: uuid” | NVARCHAR(36), unique, NOT NULL, default NEWID() (`M:034_1_alert_analytics_table.yaml:12` “defaultValueComputed: NEWID()”) | `AlertUuid` | STRING(36), required, unique | new random uuid (Hibernate generates it: `C:domain/analytics/AlertAnalytics.java:24` “@GeneratedValue(strategy = GenerationType.AUTO)”) |
 | `transaction_uuid` | `M:034_1_alert_analytics_table.yaml:17` “name: transaction_uuid” | NVARCHAR(36) | `TransactionUuid` | STRING(36) | the transaction uuid |
 | `alert_id` | `M:034_1_alert_analytics_table.yaml:20` “name: alert_id” | NVARCHAR(MAX) | `AlertId` | MULTILINE_TEXT 10,000 | `screened_data.id` |
 | `alert_category` | `M:034_1_alert_analytics_table.yaml:23` “name: alert_category” | NVARCHAR(MAX) | `AlertCategory` | MULTILINE_TEXT 10,000 | `screened_data.category` |
@@ -288,7 +291,7 @@ WLE. Java: `C:domain/analytics/HitAnalytics.java:19` “@Table(name = "ds_uc_B_A
 
 | Column | Evidence | SQL type | Field | Data Fabric type | Written at init (value) |
 |---|---|---|---|---|---|
-| `uuid` | `M:034_2_hit_analytics_table.yaml:10` “name: uuid” | NVARCHAR(36), unique, NOT NULL, default NEWID() (`M:034_2_hit_analytics_table.yaml:12` “defaultValueComputed: NEWID()”) | `Uuid` | STRING(36), required, unique | new random uuid (`C:domain/analytics/HitAnalytics.java:23` “@GeneratedValue(strategy = GenerationType.AUTO)”) |
+| `uuid` | `M:034_2_hit_analytics_table.yaml:10` “name: uuid” | NVARCHAR(36), unique, NOT NULL, default NEWID() (`M:034_2_hit_analytics_table.yaml:12` “defaultValueComputed: NEWID()”) | `HitUuid` | STRING(36), required, unique | new random uuid (`C:domain/analytics/HitAnalytics.java:23` “@GeneratedValue(strategy = GenerationType.AUTO)”) |
 | `transaction_uuid` | `M:034_2_hit_analytics_table.yaml:17` “name: transaction_uuid” | NVARCHAR(36) | `TransactionUuid` | STRING(36) | the transaction uuid |
 | `wle_id` | `M:034_2_hit_analytics_table.yaml:20` “name: wle_id” | NVARCHAR(255) | `WleId` | STRING(255) | `wle.id` |
 | `wle_category` | `M:034_2_hit_analytics_table.yaml:23` “name: wle_category” | NVARCHAR(255) | `WleCategory` | STRING(255) | `wle.category` |
@@ -309,7 +312,8 @@ is not unique in Evelyn: a CSV may hold identical hit ids, and the e2e suite tes
 
 ### 8.4 Evelyn's indexes, which Data Fabric cannot carry (D-5)
 
-All ten are non-unique. Data Fabric offers only a single-field `isUnique`, used for `Uuid` (each table's unique column).
+All ten are non-unique. Data Fabric offers only a single-field `isUnique`, used for each table's own uuid field (`TransactionUuid`,
+`AlertUuid`, `HitUuid`; each table's unique column).
 
 | Table | Index (columns in the changeset) | Evidence |
 |---|---|---|

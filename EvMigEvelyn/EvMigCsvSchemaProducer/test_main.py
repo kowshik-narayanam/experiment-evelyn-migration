@@ -92,7 +92,7 @@ def test_should_start_transaction(entities):
     # verify(analyticsServiceMock).initFullAnalytics(transactionMock, screenedData, wleData)
     init.assert_called_once()
     _, transaction, analytics_screened_data, analytics_wle_data = init.call_args.args
-    assert transaction.Uuid == transaction_id
+    assert transaction.TransactionUuid == transaction_id
     assert analytics_screened_data == screened_data
     assert analytics_wle_data == wle_data
 
@@ -102,7 +102,7 @@ def test_should_start_transaction(entities):
     assert [WleData.model_validate(wle) for wle in result.wle_list] == wle_data
     assert result.request_id == request_id
     # beyond Java: the real services wrote the rows
-    assert [row["Uuid"] for row in entities.rows[TRANSACTIONS]] == [transaction_id]
+    assert [row["TransactionUuid"] for row in entities.rows[TRANSACTIONS]] == [transaction_id]
 
 
 def test_should_persist_gold_value_for_alert_and_hit_for_analytics(entities):
@@ -140,7 +140,7 @@ def test_the_three_data_fabric_rows_hold_the_values_of_mapping_section_8(entitie
 
     (transaction,) = entities.rows[TRANSACTIONS]
     assert {field: transaction[field] for field in transaction if field != "Id" and field != "StartTime"} == {
-        "Uuid": alert.uuid,
+        "TransactionUuid": alert.uuid,
         "EndTime": None,
         "Status": "NEW",
         "StartBpUuid": RUN_ID,  # bp_run_id
@@ -157,14 +157,14 @@ def test_the_three_data_fabric_rows_hold_the_values_of_mapping_section_8(entitie
     assert before <= parse_utc(transaction["StartTime"]) <= datetime.now(UTC) + timedelta(seconds=1)
 
     (alert_row,) = entities.rows[ALERTS]
-    assert {field: alert_row[field] for field in alert_row if field not in ("Id", "Uuid")} == {
+    assert {field: alert_row[field] for field in alert_row if field not in ("Id", "AlertUuid")} == {
         "TransactionUuid": alert.uuid, "AlertId": "A-1", "AlertCategory": "Sanctions", "AlertEntityType": "INDIVIDUAL",
         "AlertDwDecision": None, "AlertDwExplanation": None, "AlertMtDecision": None, "AlertMtExplanation": None,
         "WorkerFullName": None, "WorkerId": None, "HtmlReportLink": None, "CsvReportLink": None,
         "AutoQC": False, "Ticker": False, "GoldDecision": "1", "MtReviewStart": None, "MtReviewComplete": None,
         "ClientId": "5", "OriginalTransactionUuid": original,  # the alert row does carry it (mapping 8.2)
     }
-    assert alert_row["Uuid"] != alert.uuid  # its own new uuid
+    assert alert_row["AlertUuid"] != alert.uuid  # its own new uuid
 
     assert [{field: row[field] for field in ("TransactionUuid", "WleId", "WleCategory", "WleEntityType", "GoldDecision")}
             for row in entities.rows[HITS]] == [
