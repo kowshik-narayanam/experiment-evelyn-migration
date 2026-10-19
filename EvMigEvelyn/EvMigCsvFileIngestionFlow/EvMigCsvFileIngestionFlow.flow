@@ -6667,8 +6667,8 @@
       },
       "forEachRecord1": {
         "position": {
-          "x": 336,
-          "y": 96
+          "x": 320,
+          "y": 128
         },
         "size": {
           "width": 576,
